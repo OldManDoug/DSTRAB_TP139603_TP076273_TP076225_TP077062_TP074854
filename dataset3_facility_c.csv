@@ -1,0 +1,201 @@
+PatientID,Age,CareType,LengthOfStay,BaseCostPerHour,DaysVisitsPerYear
+PT3001,8,Routine Checkup,1,35.0,2
+PT3002,34,Outpatient,2,50.0,3
+PT3003,67,Outpatient,3,50.0,12
+PT3004,52,Routine Checkup,1,35.0,4
+PT3005,79,Outpatient,4,50.0,8
+PT3006,14,Vaccination,1,20.0,1
+PT3007,41,Outpatient,2,50.0,5
+PT3008,63,Outpatient,3,50.0,6
+PT3009,28,Routine Checkup,1,35.0,2
+PT3010,75,Inpatient,24,110.0,1
+PT3011,5,Routine Checkup,1,35.0,3
+PT3012,45,Outpatient,2,50.0,4
+PT3013,82,Outpatient,3,50.0,10
+PT3014,37,Vaccination,1,20.0,1
+PT3015,59,Inpatient,36,110.0,2
+PT3016,11,Routine Checkup,1,35.0,2
+PT3017,70,Outpatient,4,50.0,9
+PT3018,48,Outpatient,2,50.0,5
+PT3019,65,Routine Checkup,1,35.0,4
+PT3020,31,Vaccination,1,20.0,1
+PT3021,78,Inpatient,48,110.0,1
+PT3022,23,Outpatient,2,50.0,3
+PT3023,56,Outpatient,3,50.0,7
+PT3024,84,Routine Checkup,1,35.0,3
+PT3025,40,Outpatient,2,50.0,4
+PT3026,69,Outpatient,4,50.0,11
+PT3027,16,Vaccination,1,20.0,1
+PT3028,50,Routine Checkup,1,35.0,3
+PT3029,72,Inpatient,30,110.0,2
+PT3030,35,Outpatient,2,50.0,6
+PT3031,61,Outpatient,3,50.0,8
+PT3032,9,Routine Checkup,1,35.0,2
+PT3033,80,Outpatient,4,50.0,10
+PT3034,43,Vaccination,1,20.0,1
+PT3035,66,Inpatient,24,110.0,1
+PT3036,29,Outpatient,2,50.0,4
+PT3037,54,Routine Checkup,1,35.0,5
+PT3038,73,Outpatient,3,50.0,9
+PT3039,38,Outpatient,2,50.0,3
+PT3040,81,Inpatient,42,110.0,1
+PT3041,12,Vaccination,1,20.0,1
+PT3042,47,Outpatient,3,50.0,6
+PT3043,68,Routine Checkup,1,35.0,4
+PT3044,26,Outpatient,2,50.0,2
+PT3045,76,Outpatient,4,50.0,12
+PT3046,58,Inpatient,36,110.0,2
+PT3047,33,Routine Checkup,1,35.0,3
+PT3048,64,Outpatient,3,50.0,7
+PT3049,15,Vaccination,1,20.0,1
+PT3050,71,Outpatient,2,50.0,8
+PT3051,42,Routine Checkup,1,35.0,4
+PT3052,83,Inpatient,48,110.0,1
+PT3053,27,Outpatient,2,50.0,3
+PT3054,60,Outpatient,3,50.0,6
+PT3055,77,Routine Checkup,1,35.0,5
+PT3056,36,Vaccination,1,20.0,1
+PT3057,51,Outpatient,4,50.0,5
+PT3058,69,Inpatient,28,110.0,2
+PT3059,10,Routine Checkup,1,35.0,2
+PT3060,74,Outpatient,3,50.0,10
+PT3061,46,Outpatient,2,50.0,4
+PT3062,85,Routine Checkup,1,35.0,3
+PT3063,30,Vaccination,1,20.0,1
+PT3064,62,Inpatient,32,110.0,1
+PT3065,55,Outpatient,3,50.0,7
+PT3066,79,Outpatient,4,50.0,9
+PT3067,22,Routine Checkup,1,35.0,2
+PT3068,49,Outpatient,2,50.0,5
+PT3069,67,Routine Checkup,1,35.0,4
+PT3070,82,Inpatient,54,110.0,1
+PT3071,13,Vaccination,1,20.0,1
+PT3072,39,Outpatient,3,50.0,4
+PT3073,57,Outpatient,2,50.0,6
+PT3074,70,Routine Checkup,1,35.0,5
+PT3075,44,Outpatient,4,50.0,3
+PT3076,78,Inpatient,40,110.0,2
+PT3077,25,Routine Checkup,1,35.0,2
+PT3078,63,Outpatient,3,50.0,8
+PT3079,17,Vaccination,1,20.0,1
+PT3080,75,Outpatient,2,50.0,11
+PT3081,53,Routine Checkup,1,35.0,4
+PT3082,80,Inpatient,36,110.0,1
+PT3083,32,Outpatient,3,50.0,5
+PT3084,66,Outpatient,2,50.0,7
+PT3085,41,Routine Checkup,1,35.0,3
+PT3086,73,Vaccination,1,20.0,1
+PT3087,58,Outpatient,4,50.0,6
+PT3088,84,Inpatient,60,110.0,1
+PT3089,7,Routine Checkup,1,35.0,2
+PT3090,71,Outpatient,3,50.0,10
+PT3091,45,Outpatient,2,50.0,4
+PT3092,60,Routine Checkup,1,35.0,5
+PT3093,28,Vaccination,1,20.0,1
+PT3094,76,Inpatient,44,110.0,2
+PT3095,52,Outpatient,3,50.0,6
+PT3096,81,Outpatient,4,50.0,8
+PT3097,18,Routine Checkup,1,35.0,2
+PT3098,48,Outpatient,2,50.0,4
+PT3099,65,Routine Checkup,1,35.0,5
+PT3100,79,Inpatient,50,110.0,1
+PT3101,14,Vaccination,1,20.0,1
+PT3102,37,Outpatient,3,50.0,3
+PT3103,56,Outpatient,2,50.0,7
+PT3104,68,Routine Checkup,1,35.0,4
+PT3105,40,Outpatient,4,50.0,5
+PT3106,77,Inpatient,38,110.0,2
+PT3107,24,Routine Checkup,1,35.0,2
+PT3108,62,Outpatient,3,50.0,9
+PT3109,16,Vaccination,1,20.0,1
+PT3110,74,Outpatient,2,50.0,10
+PT3111,50,Routine Checkup,1,35.0,3
+PT3112,83,Inpatient,52,110.0,1
+PT3113,31,Outpatient,3,50.0,4
+PT3114,64,Outpatient,2,50.0,8
+PT3115,43,Routine Checkup,1,35.0,4
+PT3116,72,Vaccination,1,20.0,1
+PT3117,59,Outpatient,4,50.0,6
+PT3118,85,Inpatient,64,110.0,1
+PT3119,6,Routine Checkup,1,35.0,2
+PT3120,70,Outpatient,3,50.0,11
+PT3121,47,Outpatient,2,50.0,5
+PT3122,61,Routine Checkup,1,35.0,4
+PT3123,29,Vaccination,1,20.0,1
+PT3124,78,Inpatient,46,110.0,2
+PT3125,54,Outpatient,3,50.0,7
+PT3126,80,Outpatient,4,50.0,9
+PT3127,21,Routine Checkup,1,35.0,2
+PT3128,49,Outpatient,2,50.0,4
+PT3129,67,Routine Checkup,1,35.0,6
+PT3130,82,Inpatient,56,110.0,1
+PT3131,11,Vaccination,1,20.0,1
+PT3132,38,Outpatient,3,50.0,4
+PT3133,58,Outpatient,2,50.0,8
+PT3134,69,Routine Checkup,1,35.0,5
+PT3135,42,Outpatient,4,50.0,3
+PT3136,75,Inpatient,34,110.0,2
+PT3137,26,Routine Checkup,1,35.0,2
+PT3138,63,Outpatient,3,50.0,7
+PT3139,15,Vaccination,1,20.0,1
+PT3140,73,Outpatient,2,50.0,12
+PT3141,51,Routine Checkup,1,35.0,4
+PT3142,81,Inpatient,42,110.0,1
+PT3143,33,Outpatient,3,50.0,5
+PT3144,65,Outpatient,2,50.0,6
+PT3145,44,Routine Checkup,1,35.0,3
+PT3146,76,Vaccination,1,20.0,1
+PT3147,57,Outpatient,4,50.0,7
+PT3148,84,Inpatient,58,110.0,1
+PT3149,10,Routine Checkup,1,35.0,2
+PT3150,71,Outpatient,3,50.0,9
+PT3151,46,Outpatient,2,50.0,4
+PT3152,59,Routine Checkup,1,35.0,5
+PT3153,30,Vaccination,1,20.0,1
+PT3154,77,Inpatient,40,110.0,2
+PT3155,53,Outpatient,3,50.0,6
+PT3156,82,Outpatient,4,50.0,10
+PT3157,19,Routine Checkup,1,35.0,2
+PT3158,48,Outpatient,2,50.0,5
+PT3159,66,Routine Checkup,1,35.0,4
+PT3160,79,Inpatient,48,110.0,1
+PT3161,12,Vaccination,1,20.0,1
+PT3162,36,Outpatient,3,50.0,3
+PT3163,55,Outpatient,2,50.0,7
+PT3164,68,Routine Checkup,1,35.0,5
+PT3165,41,Outpatient,4,50.0,4
+PT3166,74,Inpatient,36,110.0,2
+PT3167,23,Routine Checkup,1,35.0,2
+PT3168,61,Outpatient,3,50.0,8
+PT3169,17,Vaccination,1,20.0,1
+PT3170,72,Outpatient,2,50.0,11
+PT3171,49,Routine Checkup,1,35.0,3
+PT3172,83,Inpatient,54,110.0,1
+PT3173,34,Outpatient,3,50.0,4
+PT3174,63,Outpatient,2,50.0,9
+PT3175,45,Routine Checkup,1,35.0,4
+PT3176,70,Vaccination,1,20.0,1
+PT3177,56,Outpatient,4,50.0,6
+PT3178,85,Inpatient,62,110.0,1
+PT3179,8,Routine Checkup,1,35.0,2
+PT3180,69,Outpatient,3,50.0,10
+PT3181,43,Outpatient,2,50.0,5
+PT3182,58,Routine Checkup,1,35.0,4
+PT3183,27,Vaccination,1,20.0,1
+PT3184,76,Inpatient,42,110.0,2
+PT3185,52,Outpatient,3,50.0,7
+PT3186,80,Outpatient,4,50.0,8
+PT3187,20,Routine Checkup,1,35.0,2
+PT3188,47,Outpatient,2,50.0,4
+PT3189,64,Routine Checkup,1,35.0,6
+PT3190,81,Inpatient,50,110.0,1
+PT3191,13,Vaccination,1,20.0,1
+PT3192,39,Outpatient,3,50.0,4
+PT3193,57,Outpatient,2,50.0,7
+PT3194,67,Routine Checkup,1,35.0,5
+PT3195,40,Outpatient,4,50.0,3
+PT3196,78,Inpatient,44,110.0,2
+PT3197,25,Routine Checkup,1,35.0,2
+PT3198,62,Outpatient,3,50.0,8
+PT3199,16,Vaccination,1,20.0,1
+PT3200,75,Outpatient,2,50.0,10

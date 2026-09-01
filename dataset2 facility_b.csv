@@ -1,0 +1,201 @@
+PatientID,Age,CareType,LengthOfStay,BaseCostPerHour,DaysVisitsPerYear
+PT2001,19,Vaccination,1,25.0,1
+PT2002,22,Rehabilitation,2,75.0,12
+PT2003,12,Routine Checkup,1,40.0,2
+PT2004,21,Emergency,6,120.0,1
+PT2005,17,Rehabilitation,3,75.0,8
+PT2006,24,Vaccination,1,25.0,2
+PT2007,15,Routine Checkup,2,40.0,1
+PT2008,20,Rehabilitation,4,75.0,10
+PT2009,23,Outpatient,3,60.0,3
+PT2010,18,Vaccination,1,25.0,1
+PT2011,10,Routine Checkup,1,40.0,2
+PT2012,25,Rehabilitation,2,75.0,6
+PT2013,21,Vaccination,1,25.0,1
+PT2014,16,Emergency,5,120.0,1
+PT2015,22,Routine Checkup,2,40.0,3
+PT2016,19,Rehabilitation,3,75.0,9
+PT2017,20,Vaccination,1,25.0,2
+PT2018,14,Routine Checkup,1,40.0,1
+PT2019,23,Emergency,4,120.0,2
+PT2020,18,Rehabilitation,2,75.0,10
+PT2021,21,Outpatient,2,60.0,4
+PT2022,25,Vaccination,1,25.0,1
+PT2023,13,Routine Checkup,1,40.0,2
+PT2024,22,Rehabilitation,4,75.0,8
+PT2025,19,Vaccination,1,25.0,2
+PT2026,17,Emergency,3,120.0,1
+PT2027,24,Routine Checkup,2,40.0,2
+PT2028,20,Rehabilitation,3,75.0,11
+PT2029,21,Vaccination,1,25.0,1
+PT2030,16,Outpatient,3,60.0,3
+PT2031,23,Rehabilitation,2,75.0,7
+PT2032,18,Routine Checkup,1,40.0,2
+PT2033,22,Vaccination,1,25.0,2
+PT2034,19,Emergency,5,120.0,1
+PT2035,25,Rehabilitation,4,75.0,6
+PT2036,15,Vaccination,1,25.0,1
+PT2037,21,Routine Checkup,2,40.0,3
+PT2038,20,Rehabilitation,2,75.0,9
+PT2039,17,Outpatient,3,60.0,2
+PT2040,24,Vaccination,1,25.0,2
+PT2041,18,Emergency,6,120.0,1
+PT2042,22,Rehabilitation,3,75.0,10
+PT2043,19,Routine Checkup,1,40.0,2
+PT2044,23,Vaccination,1,25.0,1
+PT2045,21,Rehabilitation,2,75.0,8
+PT2046,16,Routine Checkup,2,40.0,1
+PT2047,25,Outpatient,4,60.0,3
+PT2048,20,Vaccination,1,25.0,2
+PT2049,18,Rehabilitation,3,75.0,12
+PT2050,22,Emergency,4,120.0,1
+PT2051,19,Routine Checkup,1,40.0,2
+PT2052,24,Rehabilitation,2,75.0,6
+PT2053,21,Vaccination,1,25.0,1
+PT2054,17,Outpatient,2,60.0,4
+PT2055,23,Rehabilitation,4,75.0,9
+PT2056,20,Routine Checkup,1,40.0,3
+PT2057,18,Vaccination,1,25.0,2
+PT2058,22,Emergency,5,120.0,2
+PT2059,25,Rehabilitation,3,75.0,7
+PT2060,19,Vaccination,1,25.0,1
+PT2061,21,Routine Checkup,2,40.0,2
+PT2062,16,Rehabilitation,2,75.0,8
+PT2063,24,Outpatient,3,60.0,3
+PT2064,20,Vaccination,1,25.0,2
+PT2065,18,Emergency,3,120.0,1
+PT2066,23,Rehabilitation,4,75.0,10
+PT2067,22,Routine Checkup,1,40.0,2
+PT2068,19,Vaccination,1,25.0,1
+PT2069,25,Rehabilitation,2,75.0,5
+PT2070,21,Outpatient,2,60.0,4
+PT2071,17,Vaccination,1,25.0,2
+PT2072,20,Emergency,6,120.0,1
+PT2073,24,Rehabilitation,3,75.0,8
+PT2074,18,Routine Checkup,1,40.0,3
+PT2075,22,Vaccination,1,25.0,1
+PT2076,19,Rehabilitation,4,75.0,11
+PT2077,23,Outpatient,3,60.0,2
+PT2078,21,Vaccination,1,25.0,2
+PT2079,25,Emergency,4,120.0,1
+PT2080,18,Routine Checkup,2,40.0,2
+PT2081,20,Rehabilitation,2,75.0,9
+PT2082,22,Vaccination,1,25.0,1
+PT2083,19,Outpatient,2,60.0,3
+PT2084,24,Rehabilitation,3,75.0,7
+PT2085,21,Routine Checkup,1,40.0,2
+PT2086,17,Vaccination,1,25.0,2
+PT2087,23,Emergency,5,120.0,1
+PT2088,20,Rehabilitation,4,75.0,10
+PT2089,18,Vaccination,1,25.0,1
+PT2090,22,Outpatient,3,60.0,4
+PT2091,25,Rehabilitation,2,75.0,6
+PT2092,19,Routine Checkup,1,40.0,3
+PT2093,21,Vaccination,1,25.0,2
+PT2094,24,Emergency,3,120.0,2
+PT2095,18,Rehabilitation,3,75.0,8
+PT2096,20,Routine Checkup,2,40.0,1
+PT2097,22,Vaccination,1,25.0,1
+PT2098,23,Outpatient,4,60.0,3
+PT2099,19,Rehabilitation,2,75.0,12
+PT2100,25,Vaccination,1,25.0,2
+PT2101,21,Emergency,4,120.0,1
+PT2102,18,Routine Checkup,1,40.0,2
+PT2103,22,Rehabilitation,3,75.0,9
+PT2104,20,Vaccination,1,25.0,1
+PT2105,24,Outpatient,2,60.0,5
+PT2106,19,Rehabilitation,4,75.0,7
+PT2107,23,Routine Checkup,2,40.0,2
+PT2108,21,Vaccination,1,25.0,2
+PT2109,17,Emergency,6,120.0,1
+PT2110,25,Rehabilitation,2,75.0,6
+PT2111,18,Routine Checkup,1,40.0,3
+PT2112,22,Vaccination,1,25.0,1
+PT2113,20,Outpatient,3,60.0,3
+PT2114,24,Rehabilitation,3,75.0,10
+PT2115,19,Vaccination,1,25.0,2
+PT2116,21,Emergency,3,120.0,1
+PT2117,23,Routine Checkup,2,40.0,2
+PT2118,18,Rehabilitation,4,75.0,8
+PT2119,22,Vaccination,1,25.0,1
+PT2120,25,Outpatient,2,60.0,4
+PT2121,20,Rehabilitation,2,75.0,11
+PT2122,19,Routine Checkup,1,40.0,2
+PT2123,24,Vaccination,1,25.0,2
+PT2124,21,Emergency,5,120.0,1
+PT2125,18,Rehabilitation,3,75.0,9
+PT2126,23,Vaccination,1,25.0,1
+PT2127,22,Outpatient,3,60.0,3
+PT2128,25,Routine Checkup,2,40.0,2
+PT2129,20,Rehabilitation,4,75.0,7
+PT2130,19,Vaccination,1,25.0,2
+PT2131,21,Emergency,4,120.0,1
+PT2132,24,Rehabilitation,2,75.0,10
+PT2133,18,Routine Checkup,1,40.0,3
+PT2134,22,Vaccination,1,25.0,1
+PT2135,20,Outpatient,2,60.0,4
+PT2136,25,Rehabilitation,3,75.0,8
+PT2137,19,Vaccination,1,25.0,2
+PT2138,23,Emergency,6,120.0,1
+PT2139,21,Routine Checkup,2,40.0,2
+PT2140,18,Rehabilitation,4,75.0,12
+PT2141,22,Vaccination,1,25.0,1
+PT2142,24,Outpatient,3,60.0,3
+PT2143,20,Rehabilitation,2,75.0,6
+PT2144,19,Routine Checkup,1,40.0,2
+PT2145,25,Vaccination,1,25.0,2
+PT2146,21,Emergency,3,120.0,1
+PT2147,18,Rehabilitation,3,75.0,9
+PT2148,23,Vaccination,1,25.0,1
+PT2149,22,Outpatient,2,60.0,5
+PT2150,20,Routine Checkup,2,40.0,3
+PT2151,24,Rehabilitation,4,75.0,7
+PT2152,19,Vaccination,1,25.0,2
+PT2153,21,Emergency,5,120.0,1
+PT2154,25,Rehabilitation,2,75.0,10
+PT2155,18,Routine Checkup,1,40.0,2
+PT2156,22,Vaccination,1,25.0,1
+PT2157,20,Outpatient,3,60.0,4
+PT2158,24,Rehabilitation,3,75.0,8
+PT2159,19,Vaccination,1,25.0,2
+PT2160,23,Emergency,4,120.0,1
+PT2161,21,Routine Checkup,2,40.0,2
+PT2162,18,Rehabilitation,2,75.0,11
+PT2163,22,Vaccination,1,25.0,1
+PT2164,25,Outpatient,4,60.0,3
+PT2165,20,Rehabilitation,3,75.0,9
+PT2166,19,Routine Checkup,1,40.0,3
+PT2167,24,Vaccination,1,25.0,2
+PT2168,21,Emergency,6,120.0,1
+PT2169,18,Rehabilitation,4,75.0,6
+PT2170,23,Vaccination,1,25.0,1
+PT2171,22,Outpatient,2,60.0,4
+PT2172,20,Routine Checkup,2,40.0,2
+PT2173,25,Rehabilitation,2,75.0,10
+PT2174,19,Vaccination,1,25.0,2
+PT2175,21,Emergency,3,120.0,1
+PT2176,24,Rehabilitation,3,75.0,7
+PT2177,18,Routine Checkup,1,40.0,2
+PT2178,22,Vaccination,1,25.0,1
+PT2179,20,Outpatient,3,60.0,3
+PT2180,25,Rehabilitation,4,75.0,8
+PT2181,19,Vaccination,1,25.0,2
+PT2182,23,Emergency,5,120.0,1
+PT2183,21,Routine Checkup,2,40.0,3
+PT2184,18,Rehabilitation,2,75.0,12
+PT2185,22,Vaccination,1,25.0,1
+PT2186,24,Outpatient,2,60.0,5
+PT2187,20,Rehabilitation,3,75.0,9
+PT2188,19,Routine Checkup,1,40.0,2
+PT2189,25,Vaccination,1,25.0,2
+PT2190,21,Emergency,4,120.0,1
+PT2191,18,Rehabilitation,4,75.0,7
+PT2192,23,Vaccination,1,25.0,1
+PT2193,22,Outpatient,3,60.0,4
+PT2194,20,Routine Checkup,2,40.0,2
+PT2195,25,Rehabilitation,2,75.0,10
+PT2196,19,Vaccination,1,25.0,2
+PT2197,21,Emergency,5,120.0,1
+PT2198,24,Rehabilitation,3,75.0,8
+PT2199,18,Routine Checkup,1,40.0,3
+PT2200,22,Vaccination,1,25.0,1
