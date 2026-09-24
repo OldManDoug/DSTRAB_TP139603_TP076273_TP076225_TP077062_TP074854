@@ -53,71 +53,109 @@ void implements() {
 }
 
 /*/ ------------------------------------
-// 2. Circular Linked List Implementation
-// ------------------------------------
-struct RecordA {
-    string careType;
-    int age;
-    int daysVisit;
-    int baseCost;
+// 2. Singly Linked List Implementation
+// ------------------------------------*/
+struct RecordB {
+    string data;
+    RecordB* next;
+    RecordB(string val) : data(val), next(nullptr) {}
 };
 
-struct ProcessRecordA {
-    RecordA data;
-    ProcessRecordA* next;
-    ProcessRecordA(const RecordA& rec) : data(rec), next(nullptr) {}
-};
-
-class CircularListA {
-    ProcessRecordA* head;
-public:
-    CircularListA() : head(nullptr) {}
-
-    void insert(const RecordA& rec) {
-        ProcessRecordA* newNode = new ProcessRecordA(rec);
-        if (!head) {
-            head = newNode;
-            head->next = head; // Point to self (Circular)
-            return;
-        }
-        ProcessRecordA* temp = head;
-        while (temp->next != head) {
-            temp = temp->next;
-        }
-        temp->next = newNode;
-        newNode->next = head;
+// FIX: Added '*' so 'heade' is a reference to a RecordB pointer
+void insertatEnd(RecordB*& heade, const string& value1) { 
+    RecordB* newNod = new RecordB(value1);
+    if (!heade) {
+        heade = newNod;
+        return;
     }
+    RecordB* temp = heade;
+    while (temp->next) {
+        temp = temp->next;
+    }
+    temp->next = newNod;
+}
 
+void creater() {
+    RecordB* heade = nullptr;
     
-};
-void processFile(const string& filename) {
-    ProcessRecordA* r = nullptr;
-        ifstream file(filename);
-        if (!file.is_open()) {
-            cerr << "Error opening " << filename << endl;
-            return;
-        }
+    ifstream infile("dataset2facility_b.csv",ios::out); 
 
-        string line;
-        while (getline(file, line)) {
-            stringstream ss(line);
-            string careTypeStr, ageStr, daysStr, costStr;
-
-            // Parse CSV comma-separated tokens
-            if (getline(ss, careTypeStr, ',') &&
-                getline(ss, ageStr, ',') &&
-                getline(ss, daysStr, ',') &&
-                getline(ss, costStr, ',')) {
-
-                RecordA rec;
-                rec.careType = careTypeStr;
-                rec.age = stoi(ageStr);
-                rec.daysVisit = stoi(daysStr);
-                rec.baseCost = stoi(costStr);
-
-              //  insert(rec);
-            }
-        }
-        file.close();
+    if (!infile.is_open()) {
+        cerr << "Error: Could not open dataset2facility_b.csv" << endl;
+        return;
     }
-*/
+
+    string line;
+
+    while (getline(infile, line)) {
+        insertatEnd(heade, line); // Now matches the RecordB*& signature
+    }
+    infile.close();
+
+    // Display linked list
+    RecordB* temp = heade;
+    while (temp) {
+        cout << temp->data << endl;
+        temp = temp->next;
+    }
+}
+// Doubly or Circular for Daatset 3
+struct Age{
+    // one structure for each data, age 
+    int age;
+    Age* proc;
+    Age*prev;
+};
+struct DaysVisit{
+    int daysvisit;
+DaysVisit* next1;
+
+};
+struct baseCost{
+    double basecost;
+    baseCost* proc1;
+    baseCost* prev;
+};
+
+
+class DoubleLinkLIST{
+public:
+    Age* head1;
+    Age* tail;
+
+    DoubleLinkLIST(){
+        head1 = tail = nullptr;
+    }
+
+
+void traverse(){
+    Age* current = head1;
+    while(current != nullptr){
+        cout << current->age << "";
+        current  = current ->proc;
+    }
+}
+void insertionH(int val){
+  Age* newN = new Age();
+  newN ->age = val;
+  newN ->proc =head1;
+  newN ->prev = nullptr;
+  if(head1 != nullptr){
+    head1 ->prev = newN;
+    head1 = newN;
+  }
+}
+
+};
+
+void readAge(){
+    Age* head1 = nullptr;
+ifstream f("dataset3_facility_c.csv", ios::out); //for reading, we not input data into the set
+if(f.is_open()){
+     cerr << "Error: Could not open dataset3_facility_c.csv" << endl;
+        return;
+}
+int ager; //To read numerics from a file use stringstream as all files read with string
+
+
+}
