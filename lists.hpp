@@ -2,6 +2,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <chrono>
 
 using namespace std;
 
@@ -29,7 +30,6 @@ void insertEnd(Node*& head, const string& value) {
 
 void implements() {
     Node* head = nullptr;
-    // Escaped backslashes or forward slashes for Windows paths
     ifstream infile("dataset1facility_a.csv"); 
 
     if (!infile.is_open()) {
@@ -147,15 +147,72 @@ void insertionH(int val){
 }
 
 };
-
 void readAge(){
-    Age* head1 = nullptr;
-ifstream f("dataset3_facility_c.csv", ios::out); //for reading, we not input data into the set
+    Age* head1 = nullptr; //use from node/structure above
+ //   head1 ->age = val; 
+int age; //to print out age, daysvisit, length stay
+ifstream f("dataset3facility_c.csv", ios::out); //for reading, we not input data into the set
+
 if(f.is_open()){
      cerr << "Error: Could not open dataset3_facility_c.csv" << endl;
         return;
+}else{
+while(f >> age){
+//to do so, need t define age 
+cout << "Ages in facility C" << age << endl;
 }
-int ager; //To read numerics from a file use stringstream as all files read with string
+//https://www.tutorialspoint.com/article/read-integers-from-a-text-file-with-cplusplus-ifstream
+}
 
+//https://www.geeksforgeeks.org/cpp/file-handling-c-classes/ to measure times. 
+const size_t BUFFER_SIZE = 8192;
+    char buffer[BUFFER_SIZE];
 
+    size_t totalBytes = 0;
+    size_t totalLines = 0;
+
+    auto start = chrono::steady_clock::now();
+
+    while (f.read(buffer, BUFFER_SIZE) || f.gcount() > 0) {
+        size_t bytesRead = static_cast<size_t>(f.gcount());
+
+        totalBytes += bytesRead;
+
+        // Pointer points to the beginning of the buffer
+        char* ptr = buffer;
+
+        // Process the buffer using the pointer
+        for (size_t i = 0; i < bytesRead; i++) {
+            if (*(ptr + i) == '\n') {
+                totalLines++;
+            }
+        }
+    }
+
+    auto end = chrono::steady_clock::now();
+
+    chrono::duration<double> elapsed = end - start;
+f.close();
+}
+// deletion of the patient id then save back into datasets
+//write back new data to file? 
+
+void readDays(DaysVisit* d){ 
+    int daysvisit;
+    ifstream f("Book1.csv",ios::out);
+
+    if(f.is_open()){  //error handling
+        cout <<"File cannot opened"<<endl;
+    }
+DaysVisit* temp = d;
+while(f >> daysvisit){
+    cout << "Days visited" << daysvisit << endl;
+}
+/*
+while(d){
+    cout << "DaysVisited" << d->daysvisit<< endl;
+}
+//cause infinity loop*/
+f.close(); //remember close file
+    //clear memory
 }

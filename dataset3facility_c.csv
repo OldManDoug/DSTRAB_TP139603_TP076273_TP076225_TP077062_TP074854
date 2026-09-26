@@ -1,0 +1,201 @@
+Age,CareType,LengthOfStay,BaseCostPerHour,DaysVisitsPerYear
+8,Routine Checkup,1,35,2
+34,Outpatient,2,50,3
+67,Outpatient,3,50,12
+52,Routine Checkup,1,35,4
+79,Outpatient,4,50,8
+14,Vaccination,1,20,1
+41,Outpatient,2,50,5
+63,Outpatient,3,50,6
+28,Routine Checkup,1,35,2
+75,Inpatient,24,110,1
+5,Routine Checkup,1,35,3
+45,Outpatient,2,50,4
+82,Outpatient,3,50,10
+37,Vaccination,1,20,1
+59,Inpatient,36,110,2
+11,Routine Checkup,1,35,2
+70,Outpatient,4,50,9
+48,Outpatient,2,50,5
+65,Routine Checkup,1,35,4
+31,Vaccination,1,20,1
+78,Inpatient,48,110,1
+23,Outpatient,2,50,3
+56,Outpatient,3,50,7
+84,Routine Checkup,1,35,3
+40,Outpatient,2,50,4
+69,Outpatient,4,50,11
+16,Vaccination,1,20,1
+50,Routine Checkup,1,35,3
+72,Inpatient,30,110,2
+35,Outpatient,2,50,6
+61,Outpatient,3,50,8
+9,Routine Checkup,1,35,2
+80,Outpatient,4,50,10
+43,Vaccination,1,20,1
+66,Inpatient,24,110,1
+29,Outpatient,2,50,4
+54,Routine Checkup,1,35,5
+73,Outpatient,3,50,9
+38,Outpatient,2,50,3
+81,Inpatient,42,110,1
+12,Vaccination,1,20,1
+47,Outpatient,3,50,6
+68,Routine Checkup,1,35,4
+26,Outpatient,2,50,2
+76,Outpatient,4,50,12
+58,Inpatient,36,110,2
+33,Routine Checkup,1,35,3
+64,Outpatient,3,50,7
+15,Vaccination,1,20,1
+71,Outpatient,2,50,8
+42,Routine Checkup,1,35,4
+83,Inpatient,48,110,1
+27,Outpatient,2,50,3
+60,Outpatient,3,50,6
+77,Routine Checkup,1,35,5
+36,Vaccination,1,20,1
+51,Outpatient,4,50,5
+69,Inpatient,28,110,2
+10,Routine Checkup,1,35,2
+74,Outpatient,3,50,10
+46,Outpatient,2,50,4
+85,Routine Checkup,1,35,3
+30,Vaccination,1,20,1
+62,Inpatient,32,110,1
+55,Outpatient,3,50,7
+79,Outpatient,4,50,9
+22,Routine Checkup,1,35,2
+49,Outpatient,2,50,5
+67,Routine Checkup,1,35,4
+82,Inpatient,54,110,1
+13,Vaccination,1,20,1
+39,Outpatient,3,50,4
+57,Outpatient,2,50,6
+70,Routine Checkup,1,35,5
+44,Outpatient,4,50,3
+78,Inpatient,40,110,2
+25,Routine Checkup,1,35,2
+63,Outpatient,3,50,8
+17,Vaccination,1,20,1
+75,Outpatient,2,50,11
+53,Routine Checkup,1,35,4
+80,Inpatient,36,110,1
+32,Outpatient,3,50,5
+66,Outpatient,2,50,7
+41,Routine Checkup,1,35,3
+73,Vaccination,1,20,1
+58,Outpatient,4,50,6
+84,Inpatient,60,110,1
+7,Routine Checkup,1,35,2
+71,Outpatient,3,50,10
+45,Outpatient,2,50,4
+60,Routine Checkup,1,35,5
+28,Vaccination,1,20,1
+76,Inpatient,44,110,2
+52,Outpatient,3,50,6
+81,Outpatient,4,50,8
+18,Routine Checkup,1,35,2
+48,Outpatient,2,50,4
+65,Routine Checkup,1,35,5
+79,Inpatient,50,110,1
+14,Vaccination,1,20,1
+37,Outpatient,3,50,3
+56,Outpatient,2,50,7
+68,Routine Checkup,1,35,4
+40,Outpatient,4,50,5
+77,Inpatient,38,110,2
+24,Routine Checkup,1,35,2
+62,Outpatient,3,50,9
+16,Vaccination,1,20,1
+74,Outpatient,2,50,10
+50,Routine Checkup,1,35,3
+83,Inpatient,52,110,1
+31,Outpatient,3,50,4
+64,Outpatient,2,50,8
+43,Routine Checkup,1,35,4
+72,Vaccination,1,20,1
+59,Outpatient,4,50,6
+85,Inpatient,64,110,1
+6,Routine Checkup,1,35,2
+70,Outpatient,3,50,11
+47,Outpatient,2,50,5
+61,Routine Checkup,1,35,4
+29,Vaccination,1,20,1
+78,Inpatient,46,110,2
+54,Outpatient,3,50,7
+80,Outpatient,4,50,9
+21,Routine Checkup,1,35,2
+49,Outpatient,2,50,4
+67,Routine Checkup,1,35,6
+82,Inpatient,56,110,1
+11,Vaccination,1,20,1
+38,Outpatient,3,50,4
+58,Outpatient,2,50,8
+69,Routine Checkup,1,35,5
+42,Outpatient,4,50,3
+75,Inpatient,34,110,2
+26,Routine Checkup,1,35,2
+63,Outpatient,3,50,7
+15,Vaccination,1,20,1
+73,Outpatient,2,50,12
+51,Routine Checkup,1,35,4
+81,Inpatient,42,110,1
+33,Outpatient,3,50,5
+65,Outpatient,2,50,6
+44,Routine Checkup,1,35,3
+76,Vaccination,1,20,1
+57,Outpatient,4,50,7
+84,Inpatient,58,110,1
+10,Routine Checkup,1,35,2
+71,Outpatient,3,50,9
+46,Outpatient,2,50,4
+59,Routine Checkup,1,35,5
+30,Vaccination,1,20,1
+77,Inpatient,40,110,2
+53,Outpatient,3,50,6
+82,Outpatient,4,50,10
+19,Routine Checkup,1,35,2
+48,Outpatient,2,50,5
+66,Routine Checkup,1,35,4
+79,Inpatient,48,110,1
+12,Vaccination,1,20,1
+36,Outpatient,3,50,3
+55,Outpatient,2,50,7
+68,Routine Checkup,1,35,5
+41,Outpatient,4,50,4
+74,Inpatient,36,110,2
+23,Routine Checkup,1,35,2
+61,Outpatient,3,50,8
+17,Vaccination,1,20,1
+72,Outpatient,2,50,11
+49,Routine Checkup,1,35,3
+83,Inpatient,54,110,1
+34,Outpatient,3,50,4
+63,Outpatient,2,50,9
+45,Routine Checkup,1,35,4
+70,Vaccination,1,20,1
+56,Outpatient,4,50,6
+85,Inpatient,62,110,1
+8,Routine Checkup,1,35,2
+69,Outpatient,3,50,10
+43,Outpatient,2,50,5
+58,Routine Checkup,1,35,4
+27,Vaccination,1,20,1
+76,Inpatient,42,110,2
+52,Outpatient,3,50,7
+80,Outpatient,4,50,8
+20,Routine Checkup,1,35,2
+47,Outpatient,2,50,4
+64,Routine Checkup,1,35,6
+81,Inpatient,50,110,1
+13,Vaccination,1,20,1
+39,Outpatient,3,50,4
+57,Outpatient,2,50,7
+67,Routine Checkup,1,35,5
+40,Outpatient,4,50,3
+78,Inpatient,44,110,2
+25,Routine Checkup,1,35,2
+62,Outpatient,3,50,8
+16,Vaccination,1,20,1
+75,Outpatient,2,50,10
