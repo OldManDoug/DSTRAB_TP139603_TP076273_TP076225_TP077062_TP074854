@@ -146,6 +146,7 @@ void insertionH(int val){
   }
 }
 
+
 };
 void readAge(){
     Age* head1 = nullptr; //use from node/structure above
