@@ -3,217 +3,606 @@
 #include <sstream>
 #include <string>
 #include <chrono>
+#include <iomanip>
+#include <cstdio>
 
-using namespace std;
+using namespace std; // no need put std in front of everything
 
 // ------------------------------------
 // 1. Singly Linked List Implementation
 // ------------------------------------
+
+// Node structure for linked list
 struct Node {
-    string data;
-    Node* next;
-    Node(string val) : data(val), next(nullptr) {}
+    string *fields; // dynamic array of fields
+    int fieldCount;
+    Node *next;
 };
 
-void insertEnd(Node*& head, const string& value) {
-    Node* newNode = new Node(value);
-    if (!head) {
-        head = newNode;
-        return;
-    }
-    Node* temp = head;
-    while (temp->next) {
-        temp = temp->next;
-    }
-    temp->next = newNode;
-}
+// Linked list class for CSV rows
+class Singly {
+private:
+    Node *head;
 
-void implements() {
-    Node* head = nullptr;
-    ifstream infile("dataset1facility_a.csv"); 
-
-    if (!infile.is_open()) {
-        cerr << "Error: Could not open dataset3_facility_c.csv" << endl;
-        return;
-    }
-
-    string line;
-    int age;
-    while (getline(infile, line)) {
-        insertEnd(head, line);
-    }
-    infile.close();
-
-    // Display linked list
-    Node* temp = head;
-    while (temp) {
-        cout << temp->data << endl;
-        temp = temp->next;
-    }
-}
-
-/*/ ------------------------------------
-// 2. Singly Linked List Implementation
-// ------------------------------------*/
-struct RecordB {
-    string data;
-    RecordB* next;
-    RecordB(string val) : data(val), next(nullptr) {}
-};
-
-// FIX: Added '*' so 'heade' is a reference to a RecordB pointer
-void insertatEnd(RecordB*& heade, const string& value1) { 
-    RecordB* newNod = new RecordB(value1);
-    if (!heade) {
-        heade = newNod;
-        return;
-    }
-    RecordB* temp = heade;
-    while (temp->next) {
-        temp = temp->next;
-    }
-    temp->next = newNod;
-}
-
-void creater() {
-    RecordB* heade = nullptr;
-    
-    ifstream infile("dataset2facility_b.csv",ios::out); 
-
-    if (!infile.is_open()) {
-        cerr << "Error: Could not open dataset2facility_b.csv" << endl;
-        return;
-    }
-
-    string line;
-
-    while (getline(infile, line)) {
-        insertatEnd(heade, line); // Now matches the RecordB*& signature
-    }
-    infile.close();
-
-    // Display linked list
-    RecordB* temp = heade;
-    while (temp) {
-        cout << temp->data << endl;
-        temp = temp->next;
-    }
-}
-// Doubly or Circular for Daatset 3
-struct Age{
-    // one structure for each data, age 
-    int age;
-    Age* proc;
-    Age*prev;
-};
-struct DaysVisit{
-    int daysvisit;
-DaysVisit* next1;
-
-};
-struct baseCost{
-    double basecost;
-    baseCost* proc1;
-    baseCost* prev;
-};
-
-
-class DoubleLinkLIST{
 public:
-    Age* head1;
-    Age* tail;
+    Singly() : head(nullptr) {}
 
-    DoubleLinkLIST(){
-        head1 = tail = nullptr;
+    ~Singly() {
+        clear(); //clean memory
     }
 
+    // Add a row to the linked list
+    void appendRow(string *fields, int count) {
+        Node *newNode = new Node;
+        newNode->fields = fields;
+        newNode->fieldCount = count;
+        newNode->next = nullptr;
 
-void traverse(){
-    Age* current = head1;
-    while(current != nullptr){
-        cout << current->age << "";
-        current  = current ->proc;
-    }
-}
-void insertionH(int val){
-  Age* newN = new Age();
-  newN ->age = val;
-  newN ->proc =head1;
-  newN ->prev = nullptr;
-  if(head1 != nullptr){
-    head1 ->prev = newN;
-    head1 = newN;
-  }
-}
-
-
-};
-void readAge(){
-    Age* head1 = nullptr; //use from node/structure above
- //   head1 ->age = val; 
-int age; //to print out age, daysvisit, length stay
-ifstream f("dataset3facility_c.csv", ios::out); //for reading, we not input data into the set
-
-if(f.is_open()){
-     cerr << "Error: Could not open dataset3_facility_c.csv" << endl;
-        return;
-}else{
-while(f >> age){
-//to do so, need t define age 
-cout << "Ages in facility C" << age << endl;
-}
-//https://www.tutorialspoint.com/article/read-integers-from-a-text-file-with-cplusplus-ifstream
-}
-
-//https://www.geeksforgeeks.org/cpp/file-handling-c-classes/ to measure times. 
-const size_t BUFFER_SIZE = 8192;
-    char buffer[BUFFER_SIZE];
-
-    size_t totalBytes = 0;
-    size_t totalLines = 0;
-
-    auto start = chrono::steady_clock::now();
-
-    while (f.read(buffer, BUFFER_SIZE) || f.gcount() > 0) {
-        size_t bytesRead = static_cast<size_t>(f.gcount());
-
-        totalBytes += bytesRead;
-
-        // Pointer points to the beginning of the buffer
-        char* ptr = buffer;
-
-        // Process the buffer using the pointer
-        for (size_t i = 0; i < bytesRead; i++) {
-            if (*(ptr + i) == '\n') {
-                totalLines++;
-            }
+        if (!head) {
+            head = newNode;
+        } else {
+            Node *temp = head;
+            while (temp->next) temp = temp->next;
+            temp->next = newNode;
         }
     }
 
-    auto end = chrono::steady_clock::now();
+    // Display all rows
+    void display() const {
+    Node *temp = head;
 
-    chrono::duration<double> elapsed = end - start;
-f.close();
-}
-// deletion of the patient id then save back into datasets
-//write back new data to file? 
+    // 1. Fix width outside the looping
+    cout << left 
+         << "| " << setw(5)  << "Age"
+         << "| " << setw(15) << "Care Type"
+         << "| " << setw(16) << "Length of Stay"
+         << "| " << setw(11) << "Base Cost"
+         << "| " << setw(12) << "Days Visit" << "|\n";
 
-void readDays(DaysVisit* d){ 
-    int daysvisit;
-    ifstream f("Book1.csv",ios::out);
+    // Header separator line
+    cout << string(68, '-') << "\n";
 
-    if(f.is_open()){  //error handling
-        cout <<"File cannot opened"<<endl;
+    // 2. Loop through nodes and print rows horizontally
+    while (temp) {
+        cout << "| ";
+        
+        for (int i = 0; i < temp->fieldCount; ++i) {
+            // Match column widths with header
+            int width = 10;
+            if (i == 0) width = 5;       // Age
+            else if (i == 1) width = 15; // Care Type
+            else if (i == 2) width = 16; // Length of Stay
+            else if (i == 3) width = 11; // Base Cost
+            else if (i == 4) width = 12; // Days Visit
+
+            cout << left << setw(width) << temp->fields[i] << " | ";
+        }
+// single line separateion
+        cout << "\n";
+        temp = temp->next; //to allow for A
     }
-DaysVisit* temp = d;
-while(f >> daysvisit){
-    cout << "Days visited" << daysvisit << endl;
 }
-/*
-while(d){
-    cout << "DaysVisited" << d->daysvisit<< endl;
+    // Clear all rows
+    void clear() {
+        Node *temp = head;
+        while (temp) {
+            Node *nextNode = temp->next;
+            delete[] temp->fields;
+            delete temp;
+            temp = nextNode;
+        }
+        head = nullptr;
+    }
+};
+
+// Function to parse a CSV line into fields
+string* parseCSVLine(const string &line, int &count) {
+stringstream ss(line);
+   string field;
+    count = 0;
+
+    // First pass: count fields
+    stringstream ssCount(line);
+    while (getline(ssCount, field, ',')) count++;
+
+    // Allocate array for fields
+    string *fields = new string[count];
+
+    // Second pass: store fields
+    int idx = 0;
+    while (getline(ss, field, ',')) {
+        fields[idx++] = field;
+    }
+
+    return fields;
 }
-//cause infinity loop*/
-f.close(); //remember close file
-    //clear memory
+
+void implements() {
+    Singly csvList;
+    string filename = "dataset3facility_c.csv";
+
+    // Read CSV file
+    ifstream file(filename);
+    if (!file) {
+        cerr << "Error: Cannot open file " << filename << "\n";
+    }
+
+string line;
+    while (getline(file, line)) {
+        if (line.empty()) continue; // skip empty lines
+        int fieldCount = 0;
+        string *fields = parseCSVLine(line, fieldCount);
+        csvList.appendRow(fields, fieldCount);
+    }
+    file.close();
+
+    // Display CSV contents
+    cout << "Dataset 3 Details:\n";
+    csvList.display();
+    
+}
+
+
+/*/ ------------------------------------
+// 2. Singly Linked List Implementation
+// ------------------------------------
+struct RecordB {
+    int age;
+    string *caretype;
+    int lengthofstay;
+    float basecost;
+    int daysVisit;
+    RecordB* next;
+}; // Structure of a dataset
+
+// Linked List class
+class LinkedList {
+private:
+    RecordB* head;
+
+public:
+    LinkedList() : head(nullptr) {}
+
+    // Destructor to clean up memory
+    ~LinkedList() {
+        RecordB* current = head;
+        while (current != nullptr) {
+            RecordB* nextNode = current->next;
+            delete current;
+            current = nextNode;
+        }
+    }
+
+    // Append a new node at the end of the list
+    void append(string caretype,
+    int lengthofstay,
+    float basecost,
+    int daysVisit) {
+        RecordB *newNode = new RecordB;
+        newNode->caretype = caretype;
+        newNode->lengthofstay = lengthofstay;
+        newNode->basecost = basecost;
+        newNode->daysVisit = daysVisit;
+        newNode->next = nullptr;
+
+        if (!head) {
+            head = newNode;
+        } else {
+            RecordB *temp = head;
+            while (temp->next) temp = temp->next;
+            temp->next = newNode;
+        }
+    }
+
+    // Display all rows
+    void display() const {
+    RecordB *temp = head;
+
+    // 1. Fix width outside the looping
+    cout << left 
+         << "| " << setw(5)  << "Age"
+         << "| " << setw(15) << "Care Type"
+         << "| " << setw(16) << "Length of Stay"
+         << "| " << setw(11) << "Base Cost"
+         << "| " << setw(12) << "Days Visit" << "|\n";
+
+    // Header separator line
+    cout << string(68, '-') << "\n";
+
+    // 2. Loop through nodes and print rows horizontally
+    while (temp) {
+        cout << "| ";
+        
+        for (int i = 0; i < temp->fieldCount; ++i) {
+            // Match column widths with header
+            int width = 10;
+            if (i == 0) width = 5;       // Age
+            else if (i == 1) width = 15; // Care Type
+            else if (i == 2) width = 16; // Length of Stay
+            else if (i == 3) width = 11; // Base Cost
+            else if (i == 4) width = 12; // Days Visit
+
+            cout << left << setw(width) << temp->fields[i] << " | ";
+        }
+// single line separateion
+        cout << "\n";
+        temp = temp->next; //to allow for A
+    }
+}
+};
+
+void creater() {
+    LinkedList list;
+    
+    // Open the file
+    ifstream file("dataset2facility_b.csv");
+
+    // Check if the file opened successfully
+    if (!file.is_open()) {
+        cerr << "Error: Could not open the file.\n";
+    }
+
+string line;
+    while (getline(file, line)) {
+        if (line.empty()) continue; // skip empty lines
+        int fieldCount = 0;
+        string *fields = parseCSVLine(line, fieldCount);
+        list.append(fields, fieldCount);
+    }
+    file.close();
+
+    // Display CSV contents
+    cout << "Dataset 2 Details:\n";
+   
+    list.display();
+};*/
+
+// Node structure for the linked list
+struct BaseCost {
+    double data;
+    BaseCost* next;
+
+    BaseCost(double val) : data(val), next(nullptr) {}
+};
+
+// Linked List class
+class NumberedLinkedList {
+private:
+    BaseCost* head;
+    int count;
+
+public:
+    NumberedLinkedList() : head(nullptr), count(0) {}
+
+    // Destructor to clean up dynamically allocated memory
+    ~NumberedLinkedList() {
+        BaseCost* current = head;
+        while (current != nullptr) {
+            BaseCost* nextNode = current->next;
+            delete current;
+            current = nextNode;
+        }
+    }
+
+    // Insert a new number at the end of the linked list
+    void insert(double val) {
+        BaseCost* newNode = new BaseCost(val);
+        if (head == nullptr) {
+            head = newNode;
+        } else {
+            BaseCost* temp = head;
+            while (temp->next != nullptr) {
+                temp = temp->next;
+            }
+            temp->next = newNode;
+        }
+        count++;
+    }
+
+    // Calculate total and average
+    void calculateStats() const {
+        if (head == nullptr) {
+            cout << "No numbers found in the file." << endl;
+            return;
+        }
+
+        double total = 0.0;
+        BaseCost* temp = head;
+
+        while (temp != nullptr) {
+            total += temp->data;
+            temp = temp->next;
+        }
+
+        double average = total / count;
+
+        cout << "Total Count of Patients: " << count << endl;
+        cout << "Total Sum of Costs: RM" << total << endl;
+        cout << "Average Base Cost: RM" << average << endl;
+    }
+};
+
+// Helper function to check if a token string is a valid number
+bool tryParseDouble(const string& str, double& value) {
+    stringstream ss(str);
+    ss >> value;
+    // Check if entire token was consumed as a number
+    return !ss.fail() && ss.eof();
+}
+
+void check() {
+    string fileName = "Book1.csv";
+    ifstream inFile(fileName);
+
+    if (!inFile.is_open()) {
+        cerr << "Error: Could not open file " << fileName << endl;
+    }
+
+    NumberedLinkedList numList;
+    string token;
+
+    // Read word by word (whitespace-delimited)
+    while (inFile >> token) {
+        double val;
+        // Extract numbers and ignore text characters
+        if (tryParseDouble(token, val)) {
+            numList.insert(val);
+        }
+    }
+
+    inFile.close();
+
+    // Compute total and average from linked list
+    numList.calculateStats();
+
+}
+// the above code brings forth the overall datasetX's costs. 
+// for the other 2 datasets we can combine to make 600. 
+
+
+
+
+
+//https://tutorialforgeeks.com/linked-list-operations-in-c-traversal-insertion-deletion-searching-and-reversal
+template <typename T>
+class DoublyLinkedList {
+private:
+    struct Age {
+        T data;
+        Age* prev;
+        Age* next;
+
+        Age(const T& val) : data(val), prev(nullptr), next(nullptr) {}
+    };
+
+    Age* head;
+    Age* tail;
+    size_t listSize;
+
+public:
+    DoublyLinkedList() : head(nullptr), tail(nullptr), listSize(0) {}
+
+    ~DoublyLinkedList() {
+        clear();
+    }
+
+    bool empty() const {
+        return head == nullptr;
+    }
+
+    size_t size() const {
+        return listSize;
+    }
+
+    // --- Core Operations ---
+    void push_front(const T& value);
+    void push_back(const T& value);
+    void pop_front();
+    void pop_back();
+    void remove(const T& value);
+    void print_forward() const;
+    void print_backward() const;
+    void clear();
+};
+template <typename T>
+void DoublyLinkedList<T>::push_front(const T& value) {
+    Age* newNode = new Age(value);
+    if (empty()) {
+        head = tail = newNode;
+    } else {
+        newNode->next = head;
+        head->prev = newNode;
+        head = newNode;
+    }
+    ++listSize;
+}
+
+template <typename T>
+void DoublyLinkedList<T>::push_back(const T& value) {
+    Age* newNode = new Age(value);
+    if (empty()) {
+        head = tail = newNode;
+    } else {
+        newNode->prev = tail;
+        tail->next = newNode;
+        tail = newNode;
+    }
+    ++listSize;
+}template <typename T>
+void DoublyLinkedList<T>::pop_front() {
+    if (empty()) return;
+
+    Age* temp = head;
+    if (head == tail) {
+        head = tail = nullptr;
+    } else {
+        head = head->next;
+        head->prev = nullptr;
+    }
+    delete temp;
+    --listSize;
+}
+
+template <typename T>
+void DoublyLinkedList<T>::pop_back() {
+    if (empty()) return;
+
+    Age* temp = tail;
+    if (head == tail) {
+        head = tail = nullptr;
+    } else {
+        tail = tail->prev;
+        tail->next = nullptr;
+    }
+    delete temp;
+    --listSize;
+}
+
+template <typename T>
+void DoublyLinkedList<T>::remove(const T& value) {
+    Age* current = head;
+    while (current && current->data != value) {
+        current = current->next;
+    }
+
+    if (!current) return; // Value not found
+
+    if (current == head) {
+        pop_front();
+    } else if (current == tail) {
+        pop_back();
+    } else {
+        current->prev->next = current->next;
+        current->next->prev = current->prev;
+        delete current;
+        --listSize;
+    }
+}
+template <typename T>
+void DoublyLinkedList<T>::print_forward() const {
+    Age* current = head;
+    std::cout << "Forward:  ";
+    while (current) {
+        std::cout << current->data << " <-> ";
+        current = current->next;
+    }
+    std::cout << "nullptr\n";
+}
+
+template <typename T>
+void DoublyLinkedList<T>::print_backward() const {
+    Age* current = tail;
+    std::cout << "Backward: ";
+    while (current) {
+        std::cout << current->data << " <-> ";
+        current = current->prev;
+    }
+    std::cout << "nullptr\n";
+}
+
+template <typename T>
+void DoublyLinkedList<T>::clear() {
+    while (!empty()) {
+        pop_front();
+    }
+}
+
+// RecordB structure
+struct DaysVisit {
+    int data;
+    DaysVisit* next;
+   DaysVisit(int val) : data(val), next(nullptr) {}
+
+};
+
+// Linked List class
+class NumberLinkedList {
+private:
+    DaysVisit* head;
+    int count;
+
+public:
+    NumberLinkedList() : head(nullptr), count(0) {}
+
+    // Destructor to clean up dynamically allocated memory
+    ~NumberLinkedList() {
+        DaysVisit* current = head;
+        while (current != nullptr) {
+            DaysVisit* nextNode = current->next;
+            delete current;
+            current = nextNode;
+        }
+    }
+
+    // Insert a new number at the end of the linked list
+    void insertion(int val) {
+        DaysVisit* newNode = new DaysVisit(val);
+        if (head == nullptr) {
+            head = newNode;
+        } else {
+            DaysVisit* temp = head;
+            while (temp->next != nullptr) {
+                temp = temp->next;
+            }
+            temp->next = newNode;
+        }
+        count++;
+    }
+
+    // Calculate total and average
+    void calculateStat() const {
+        if (head == nullptr) {
+            cout << "No numbers found in the file." << endl;
+            return;
+        }
+
+        int total = 0;
+        DaysVisit* temp = head;
+//somewhere here is the issue - head is null 
+        while (temp != nullptr) {
+            total += temp->data;
+            temp = temp->next;
+        }
+
+        double average = static_cast<double>(total) / count;
+
+        cout << "Total Count of Patients: " << count << endl;
+        cout << "Total Sum of Days:" << total << endl;
+        cout << "Average visit duration:" << average << "days"<< endl;
+    }
+};
+
+// Helper function to check if a token string is a valid number
+bool tryParseDouble1(const string& str, int& value) {
+    stringstream ss(str);
+    ss >> value;
+    // Check if entire token was consumed as a number
+    return !ss.fail() && ss.eof();
+}
+
+void days() {
+    string fileName = "DaysVisitedDataset.csv";
+    ifstream inFile(fileName);
+
+    if (!inFile.is_open()) {
+        cerr << "Error: Could not open file " << fileName << endl;
+    }
+
+    NumberLinkedList numList;
+    string token;
+
+    // Read word by word (whitespace-delimited)
+    while (inFile >> token) {
+        int  val;
+        // Extract numbers and ignore text characters
+        if (tryParseDouble1(token, val)) {
+            numList.insertion(val);
+        }
+    }
+
+    inFile.close();
+
+    // Compute total and average from linked list
+    numList.calculateStat();
+
 }

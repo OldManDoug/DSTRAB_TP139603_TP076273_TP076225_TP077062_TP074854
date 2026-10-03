@@ -1,162 +1,111 @@
 #include <iostream>
 #include <fstream>
-#include <sstream>
 #include <string>
-#include <cstdlib>
+#include <sstream>
 
-// Node structure for linked list
-struct Node {
-    std::string *fields; // dynamic array of fields
-    int fieldCount;
-    Node *next;
+using namespace std;
+
+// Node structure for the linked list
+struct BaseCost {
+    double data;
+    BaseCost* next;
+
+    BaseCost(double val) : data(val), next(nullptr) {}
 };
 
-// Linked list class for CSV rows
-class CSVLinkedList {
+// Linked List class
+class NumberedLinkedList {
 private:
-    Node *head;
+    BaseCost* head;
+    int count;
 
 public:
-    CSVLinkedList() : head(nullptr) {}
+    NumberedLinkedList() : head(nullptr), count(0) {}
 
-    ~CSVLinkedList() {
-        clear();
+    // Destructor to clean up dynamically allocated memory
+    ~NumberedLinkedList() {
+        BaseCost* current = head;
+        while (current != nullptr) {
+            BaseCost* nextNode = current->next;
+            delete current;
+            current = nextNode;
+        }
     }
 
-    // Add a row to the linked list
-    void appendRow(std::string *fields, int count) {
-        Node *newNode = new Node;
-        newNode->fields = fields;
-        newNode->fieldCount = count;
-        newNode->next = nullptr;
-
-        if (!head) {
+    // Insert a new number at the end of the linked list
+    void insert(double val) {
+        BaseCost* newNode = new BaseCost(val);
+        if (head == nullptr) {
             head = newNode;
         } else {
-            Node *temp = head;
-            while (temp->next) temp = temp->next;
+            BaseCost* temp = head;
+            while (temp->next != nullptr) {
+                temp = temp->next;
+            }
             temp->next = newNode;
         }
+        count++;
     }
 
-    // Display all rows
-    void display() const {
-        Node *temp = head;
-        int rowNum = 1;
-        while (temp) {
-            std::cout << "Row " << rowNum++ << ": ";
-            for (int i = 0; i < temp->fieldCount; ++i) {
-                std::cout << temp->fields[i];
-                if (i < temp->fieldCount - 1) std::cout << " | ";
-            }
-            std::cout << "\n";
+    // Calculate total and average
+    void calculateStats() const {
+        if (head == nullptr) {
+            cout << "No numbers found in the file." << endl;
+            return;
+        }
+
+        double total = 0.0;
+        BaseCost* temp = head;
+
+        while (temp != nullptr) {
+            total += temp->data;
             temp = temp->next;
         }
-    }
 
-    // Delete a row by index (1-based)
-    bool deleteRow(int index) {
-        if (index <= 0 || !head) return false;
+        double average = total / count;
 
-        Node *temp = head;
-        Node *prev = nullptr;
-        int currentIndex = 1;
-
-        while (temp && currentIndex < index) {
-            prev = temp;
-            temp = temp->next;
-            currentIndex++;
-        }
-
-        if (!temp) return false; // index out of range
-
-        if (!prev) {
-            head = temp->next;
-        } else {
-            prev->next = temp->next;
-        }
-
-        delete[] temp->fields;
-        delete temp;
-        return true;
-    }
-
-    // Clear all rows
-    void clear() {
-        Node *temp = head;
-        while (temp) {
-            Node *nextNode = temp->next;
-            delete[] temp->fields;
-            delete temp;
-            temp = nextNode;
-        }
-        head = nullptr;
+        cout << "Total Numbers Found: " << count << endl;
+        cout << "Total Sum: " << total << endl;
+        cout << "Average: " << average << endl;
     }
 };
 
-// Function to parse a CSV line into fields
-std::string* parseCSVLine(const std::string &line, int &count) {
-    std::stringstream ss(line);
-    std::string field;
-    count = 0;
-
-    // First pass: count fields
-    std::stringstream ssCount(line);
-    while (std::getline(ssCount, field, ',')) count++;
-
-    // Allocate array for fields
-    std::string *fields = new std::string[count];
-
-    // Second pass: store fields
-    int idx = 0;
-    while (std::getline(ss, field, ',')) {
-        fields[idx++] = field;
-    }
-
-    return fields;
+// Helper function to check if a token string is a valid number
+bool tryParseDouble(const string& str, double& value) {
+    stringstream ss(str);
+    ss >> value;
+    // Check if entire token was consumed as a number
+    return !ss.fail() && ss.eof();
 }
 
 int main() {
-    CSVLinkedList csvList;
-    std::string filename = "dataset3_facility_c.csv";
+    string fileName = "Book1.csv";
+    ifstream inFile(fileName);
 
-    // Read CSV file
-    std::ifstream file(filename);
-    if (!file) {
-        std::cerr << "Error: Cannot open file " << filename << "\n";
+    if (!inFile.is_open()) {
+        cerr << "Error: Could not open file " << fileName << endl;
         return 1;
     }
 
-    std::string line;
-    while (std::getline(file, line)) {
-        if (line.empty()) continue; // skip empty lines
-        int fieldCount = 0;
-        std::string *fields = parseCSVLine(line, fieldCount);
-        csvList.appendRow(fields, fieldCount);
+    NumberedLinkedList numList;
+    string token;
+
+    // Read word by word (whitespace-delimited)
+    while (inFile >> token) {
+        double val;
+        // Extract numbers and ignore text characters
+        if (tryParseDouble(token, val)) {
+            numList.insert(val);
+        }
     }
-    file.close();
 
-    // Display CSV contents
-    std::cout << "Initial CSV contents:\n";
-    csvList.display();
+    inFile.close();
 
-    // Append a new row manually
-    std::string *newFields = new std::string[3];
-    newFields[0] = "New";
-    newFields[1] = "Row";
-    newFields[2] = "Data";
-    csvList.appendRow(newFields, 3);
-
-    std::cout << "\nAfter appending a new row:\n";
-    csvList.display();
-
-    // Delete a row
-    if (csvList.deleteRow(2)) {
-        std::cout << "\nAfter deleting row 2:\n";
-        csvList.display();
-    } else {
-        std::cout << "\nFailed to delete row 2.\n";
-    }
+    // Compute total and average from linked list
+    numList.calculateStats();
 
     return 0;
 }
+/*WHAT IS YOUR CONTRIBUTION**TO THE FUTURE pls answer - dont see slide, talk about it UNDERSTAND HOW it WORKS
+however long is wanted to speak and he chooses start speaking abput it 
+No presentation ⟶ do part 2 continue now, dont come 🙂  join online teams*/

@@ -6,19 +6,19 @@
 // Custom dynamic array class
 class DynamicArray {
 private:
-    int* data;       // Pointer to the array in heap
+    int* caretype;       // Pointer to the array in heap
     size_t capacity; // Allocated memory size
     size_t length;   // Number of elements stored
 
     // Function to resize the array when full
     void resize(size_t newCapacity) {
-        // Code review comment -> Consider checking if newCapacity is less than current length to avoid data loss.
+        // Code review comment -> Consider checking if newCapacity is less than current length to avoid caretype loss.
         int* newData = new int[newCapacity];
         for (size_t i = 0; i < length; i++) {
-            newData[i] = data[i];
+            newData[i] = caretype[i];
         }
-        delete[] data; // Free old memory
-        data = newData;
+        delete[] caretype; // Free old memory
+        caretype = newData;
         capacity = newCapacity;
     }
 
@@ -28,13 +28,13 @@ public:
         : capacity(initialCapacity), length(0) {
         // Code review comment -> Ensure initialCapacity is validated to avoid allocating zero-sized arrays.
         if (capacity == 0) capacity = 2;
-        data = new int[capacity];
+        caretype = new int[capacity];
     }
 
     // Destructor
     ~DynamicArray() {
-        delete[] data;
-        // Code review comment -> Setting data to nullptr after delete[] could prevent dangling pointer issues.
+        delete[] caretype;
+        // Code review comment -> Setting caretype to nullptr after delete[] could prevent dangling pointer issues.
     }
 
     // Add element to the end
@@ -43,7 +43,7 @@ public:
             resize(capacity * 2); // Double the capacity
             // Code review comment -> Doubling capacity is fine, but consider a growth factor parameter for flexibility.
         }
-        data[length++] = value;
+        caretype[length++] = value;
     }
 
     // Remove last element
@@ -61,15 +61,16 @@ public:
         if (index >= length) {
             throw std::out_of_range("Index out of range");
         }
-        return data[index];
+        return caretype[index];
     }
 
     // Set element at index
+    //double tap the screen to open 
     void set(size_t index, int value) {
         if (index >= length) {
             throw std::out_of_range("Index out of range");
         }
-        data[index] = value;
+        caretype[index] = value;
     }
 
     // Get current size
@@ -81,7 +82,7 @@ public:
     void print() const {
         // Code review comment -> Consider adding formatting or separators for better readability.
         for (size_t i = 0; i < length; i++) {
-            std::cout << data[i] << " ";
+            std::cout << caretype[i] << " ";
         }
         std::cout << "\n";
     }
