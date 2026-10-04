@@ -54,13 +54,13 @@ public:
     // 1. Fix width outside the looping
     cout << left 
          << "| " << setw(5)  << "Age"
-         << "| " << setw(15) << "Care Type"
-         << "| " << setw(16) << "Length of Stay"
-         << "| " << setw(11) << "Base Cost"
-         << "| " << setw(12) << "Days Visit" << "|\n";
+         << " | " << setw(15) << "Care Type"
+         << " | " << setw(16) << "Length of Stay"
+         << " | " << setw(11) << "Base Cost"
+         << " | " << setw(12) << "Days Visit" << " |\n";
 
     // Header separator line
-    cout << string(68, '-') << "\n";
+    cout << string(75, '-') << "\n";
 
     // 2. Loop through nodes and print rows horizontally
     while (temp) {
@@ -81,6 +81,8 @@ public:
         cout << "\n";
         temp = temp->next; //to allow for A
     }
+    // Closing separator line
+    cout << string(75, '-') << "\n";
 }
     // Clear all rows
     void clear() {
@@ -137,7 +139,7 @@ string line;
     file.close();
 
     // Display CSV contents
-    cout << "Dataset 1 Details:\n";
+    cout << "\nDataset 1 Details:\n";
     csvList.display();
     
 }
@@ -187,13 +189,13 @@ public:
     // 1. Fix width outside the looping
     cout << left 
          << "| " << setw(5)  << "Age"
-         << "| " << setw(15) << "Care Type"
-         << "| " << setw(16) << "Length of Stay"
-         << "| " << setw(11) << "Base Cost"
-         << "| " << setw(12) << "Days Visit" << "|\n";
+         << " | " << setw(15) << "Care Type"
+         << " | " << setw(16) << "Length of Stay"
+         << " | " << setw(11) << "Base Cost"
+         << " | " << setw(12) << "Days Visit" << " |\n";
 
     // Header separator line
-    cout << string(68, '-') << "\n";
+    cout << string(75, '-') << "\n";
 
     // 2. Loop through nodes and print rows horizontally
     while (temp) {
@@ -206,7 +208,7 @@ public:
             else if (i == 1) width = 15; // Care Type
             else if (i == 2) width = 16; // Length of Stay
             else if (i == 3) width = 11; // Base Cost
-            else if (i == 4) width = 15; // Days Visit
+            else if (i == 4) width = 12; // Days Visit
 
             cout << left << setw(width) << temp->fields[i] << " | ";
         }
@@ -214,6 +216,8 @@ public:
         cout << "\n";
         temp = temp->next; //to allow for A
     }
+    // Closing separator line
+    cout << string(75, '-') << "\n";
 }
     // Clear all rows
     void clear() {
@@ -270,7 +274,7 @@ string line;
     file.close();
 
     // Display CSV contents
-    cout << "Dataset 2 Details:\n";
+    cout << "\nDataset 2 Details:\n";
     csvList.display();
     
 }

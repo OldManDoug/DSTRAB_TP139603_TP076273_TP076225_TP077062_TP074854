@@ -1,4 +1,3 @@
-Age,CareType,LengthOfStay,BaseCostPerHour,DaysVisitsPerYear
 19,Vaccination,1,25,1
 22,Rehabilitation,2,75,12
 12,Routine Checkup,1,40,2
