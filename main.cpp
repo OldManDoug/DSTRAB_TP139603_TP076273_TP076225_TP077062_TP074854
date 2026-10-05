@@ -164,10 +164,91 @@ DoublyLinkedList<int> list;
 
 }
 
+// ---------------- LINKED LIST SORT PART ----------------
+
+bool loadListIfEmpty(PatientList& list, const string& filename) {
+    if (list.getCount() > 0) {
+        return true;
+    }
+    return list.loadFromFile(filename);
+}
+
+bool ensureAllListsLoaded(PatientList& listA, PatientList& listB, PatientList& listC) {
+    bool loadedA = loadListIfEmpty(listA, "dataset1facility_a.csv");
+    bool loadedB = loadListIfEmpty(listB, "dataset2facility_b.csv");
+    bool loadedC = loadListIfEmpty(listC, "dataset3facility_c.csv");
+    return loadedA && loadedB && loadedC;
+}
+
+void runListSortingExperiment(PatientList& listA, PatientList& listB, PatientList& listC) {
+    int field;
+    do {
+        cout << "\n===== SORT BY =====" << endl;
+        cout << "1. Age" << endl;
+        cout << "2. Visit Duration (Length of Stay)" << endl;
+        cout << "3. Total Medical Cost" << endl;
+        cout << "0. Back" << endl;
+        cout << "Field: ";
+        field = readChoice();
+
+        if (field == 0) {
+            break;
+        }
+        if (field < 1 || field > 3) {
+            cout << "Invalid field, try again." << endl;
+            continue;
+        }
+
+        cout << "\n===== ORDER =====" << endl;
+        cout << "1. Ascending" << endl;
+        cout << "2. Descending" << endl;
+        cout << "Order: ";
+        int order = readChoice();
+        if (order != 1 && order != 2) {
+            cout << "Invalid order, try again." << endl;
+            continue;
+        }
+        if (!ensureAllListsLoaded(listA, listB, listC)) {
+            return;
+        }
+
+        bool ascending = (order == 1);
+        displayListSortExperiment(listA, "Dataset A", field, field, ascending);
+        displayListSortExperiment(listB, "Dataset B", field, field, ascending);
+        displayListSortExperiment(listC, "Dataset C", field, field, ascending);
+    } while (field != 0);
+}
+
+void runLinkedListMenu(PatientList& listA, PatientList& listB, PatientList& listC) {
+    int choice;
+    do {
+        cout << "\n===== LINKED LIST MENU =====" << endl;
+        cout << "1. Display all datasets (A, B, C)" << endl;
+        cout << "2. Sorting experiments (insertion sort vs merge sort)" << endl;
+        cout << "3. Linked list demo (teammates)" << endl;
+        cout << "0. Back" << endl;
+        cout << "Choice: ";
+        choice = readChoice();
+
+        switch (choice) {
+            case 1:
+                if (listA.loadFromFile("dataset1facility_a.csv")) { cout << "\nDataset A details" << endl; listA.display(); }
+                if (listB.loadFromFile("dataset2facility_b.csv")) { cout << "\nDataset B details" << endl; listB.display(); }
+                if (listC.loadFromFile("dataset3facility_c.csv")) { cout << "\nDataset C details" << endl; listC.display(); }
+                break;
+            case 2: runListSortingExperiment(listA, listB, listC); break;
+            case 3: runLinkedListDemo(); break;
+            case 0: break;
+            default: cout << "Invalid choice, try again." << endl;
+        }
+    } while (choice != 0);
+}
+
 // ---------------- MAIN MENU ----------------
 
 int main() {
     ArrayData datasetA, datasetB, datasetC;
+    PatientList listA, listB, listC;
 
     int choice;
     do {
@@ -180,7 +261,7 @@ int main() {
 
         switch (choice) {
             case 1: runArrayMenu(datasetA, datasetB, datasetC); break;
-            case 2: runLinkedListDemo(); break;
+            case 2: runLinkedListMenu(listA, listB, listC); break;
             case 0: cout << "Goodbye." << endl; break;
             default: cout << "Invalid choice, try again." << endl;
         }
