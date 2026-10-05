@@ -56,17 +56,43 @@ void runArrayMenu(ArrayData& datasetA, ArrayData& datasetB, ArrayData& datasetC)
 
 void runLinkedListDemo() {
 
-//IMPLEMENT AS A LIST - frmt slides learn dei.
-// Definition of a Node in a singly linked list - from GeeksforGeeks
-implements();
- //creater();
- check();
- days();
- 
-cout << "--- Double Linked List Contents ---" << endl;
-//age();
+    int pick;
+    do{
+        cout << "\n===== LINKED LISTING MENU =====" << endl;
+        cout <<"Prints specific needs"<<endl;
+        cout << "1. Load and display Dataset A" << endl;
+        cout << "2. Load and display Dataset B " << endl;
+        cout << "3. Load and display Dataset C " << endl;
+        cout << "4. Count the total, average days visit from 3 facilities " << endl;
+        cout << "5. Sorting " << endl;
+        cout << "6. Searching" << endl;
+        cout << "0. Back" << endl;
+        cout << "Choice: ";
+       pick = readChoice();
+
+       if(pick == 1){
+        implementing();
+       }
+       else if(pick == 2){
 clears();
-implementing();
+       }else if(pick ==3){
+        implements();
+       }else if(pick == 4){
+days();
+check();
+       }
+       else if(pick == 5){
+// another menu for sort
+stayA();
+
+       }else if(pick == 6){
+       // menu for search, 
+    }
+else if(pick == 0){
+break;
+}
+    }while(pick !=0);
+
 DoublyLinkedList<int> list;
 
     list.push_back(10);
