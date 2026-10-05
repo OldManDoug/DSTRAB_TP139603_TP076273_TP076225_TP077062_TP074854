@@ -134,43 +134,17 @@ void runArrayMenu(ArrayData& datasetA, ArrayData& datasetB, ArrayData& datasetC)
 
 void runLinkedListDemo() {
 
-    int pick;
-    do{
-        cout << "\n===== LINKED LISTING MENU =====" << endl;
-        cout <<"Prints specific needs"<<endl;
-        cout << "1. Load and display Dataset A" << endl;
-        cout << "2. Load and display Dataset B " << endl;
-        cout << "3. Load and display Dataset C " << endl;
-        cout << "4. Count the total, average days visit from 3 facilities " << endl;
-        cout << "5. Sorting " << endl;
-        cout << "6. Searching" << endl;
-        cout << "0. Back" << endl;
-        cout << "Choice: ";
-       pick = readChoice();
-
-       if(pick == 1){
-        implementing();
-       }
-       else if(pick == 2){
+//IMPLEMENT AS A LIST - frmt slides learn dei.
+// Definition of a Node in a singly linked list - from GeeksforGeeks
+implements();
+ //creater();
+ check();
+ days();
+ 
+cout << "--- Double Linked List Contents ---" << endl;
+//age();
 clears();
-       }else if(pick ==3){
-        implements();
-       }else if(pick == 4){
-days();
-check();
-       }
-       else if(pick == 5){
-// another menu for sort
-stayA();
-
-       }else if(pick == 6){
-       // menu for search, 
-    }
-else if(pick == 0){
-break;
-}
-    }while(pick !=0);
-
+implementing();
 DoublyLinkedList<int> list;
 
     list.push_back(10);
@@ -249,21 +223,15 @@ void runLinkedListMenu(PatientList& listA, PatientList& listB, PatientList& list
     int choice;
     do {
         cout << "\n===== LINKED LIST MENU =====" << endl;
-        cout << "1. Display all datasets (A, B, C)" << endl;
-        cout << "2. Sorting experiments (insertion sort vs merge sort)" << endl;
-        cout << "3. Linked list demo (teammates)" << endl;
+        cout << "1. Sorting experiments (insertion sort vs merge sort)" << endl;
+        cout << "2. Linked list demo (teammates)" << endl;
         cout << "0. Back" << endl;
         cout << "Choice: ";
         choice = readChoice();
 
         switch (choice) {
-            case 1:
-                if (listA.loadFromFile("dataset1facility_a.csv")) { cout << "\nDataset A details" << endl; listA.display(); }
-                if (listB.loadFromFile("dataset2facility_b.csv")) { cout << "\nDataset B details" << endl; listB.display(); }
-                if (listC.loadFromFile("dataset3facility_c.csv")) { cout << "\nDataset C details" << endl; listC.display(); }
-                break;
-            case 2: runListSortingExperiment(listA, listB, listC); break;
-            case 3: runLinkedListDemo(); break;
+            case 1: runListSortingExperiment(listA, listB, listC); break;
+            case 2: runLinkedListDemo(); break;
             case 0: break;
             default: cout << "Invalid choice, try again." << endl;
         }

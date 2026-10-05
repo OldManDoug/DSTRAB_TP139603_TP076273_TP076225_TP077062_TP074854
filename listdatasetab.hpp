@@ -398,7 +398,7 @@ string line;
     while (getline(file, line)) {
         if (line.empty()) continue; // skip empty lines
         int fieldCount = 0;
-        string *fields = parseCSVLine(line, fieldCount);
+        string *figitelds = parseCSVLine(line, fieldCount);
         csvList.appendRow(fields, fieldCount);
     }
     file.close();

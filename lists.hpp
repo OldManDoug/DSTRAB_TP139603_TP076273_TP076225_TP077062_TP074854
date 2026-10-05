@@ -8,259 +8,6 @@
 
 using namespace std; // no need put std in front of everything
 
-// ------------------------------------
-// 1. Singly Linked List Implementation
-// ------------------------------------
-
-// Node structure for linked list
-struct Node {
-    string *fields; // dynamic array of fields
-    int fieldCount;
-    Node *next;
-};
-
-// Linked list class for CSV rows
-class Singly {
-private:
-    Node *head;
-
-public:
-    Singly() : head(nullptr) {}
-
-    ~Singly() {
-        clear(); //clean memory
-    }
-
-    // Add a row to the linked list
-    void appendRow(string *fields, int count) {
-        Node *newNode = new Node;
-        newNode->fields = fields;
-        newNode->fieldCount = count;
-        newNode->next = nullptr;
-
-        if (!head) {
-            head = newNode;
-        } else {
-            Node *temp = head;
-            while (temp->next) temp = temp->next;
-            temp->next = newNode;
-        }
-    }
-
-    // Display all rows
-    void display() const {
-    Node *temp = head;
-
-    // 1. Fix width outside the looping
-    cout << left 
-         << "| " << setw(5)  << "Age"
-         << " | " << setw(15) << "Care Type"
-         << " | " << setw(16) << "Length of Stay"
-         << " | " << setw(11) << "Base Cost"
-         << " | " << setw(12) << "Days Visit" << " |\n";
-
-    // Header separator line
-    cout << string(75, '-') << "\n";
-
-    // 2. Loop through nodes and print rows horizontally
-    while (temp) {
-        cout << "| ";
-        
-        for (int i = 0; i < temp->fieldCount; ++i) {
-            // Match column widths with header
-            int width = 10;
-            if (i == 0) width = 5;       // Age
-            else if (i == 1) width = 15; // Care Type
-            else if (i == 2) width = 16; // Length of Stay
-            else if (i == 3) width = 11; // Base Cost
-            else if (i == 4) width = 12; // Days Visit
-
-            cout << left << setw(width) << temp->fields[i] << " | ";
-        }
-// single line separateion
-        cout << "\n";
-        temp = temp->next; //to allow for A
-    }
-    // Closing separator line
-    cout << string(75, '-') << "\n";
-}
-    // Clear all rows
-    void clear() {
-        Node *temp = head;
-        while (temp) {
-            Node *nextNode = temp->next;
-            delete[] temp->fields;
-            delete temp;
-            temp = nextNode;
-        }
-        head = nullptr;
-    }
-};
-
-// Function to parse a CSV line into fields
-string* parseCSVLine(const string &line, int &count) {
-stringstream ss(line);
-   string field;
-    count = 0;
-
-    // First pass: count fields
-    stringstream ssCount(line);
-    while (getline(ssCount, field, ',')) count++;
-
-    // Allocate array for fields
-    string *fields = new string[count];
-
-    // Second pass: store fields
-    int idx = 0;
-    while (getline(ss, field, ',')) {
-        fields[idx++] = field;
-    }
-
-    return fields;
-}
-
-void implements() {
-    Singly csvList;
-    string filename = "dataset3facility_c.csv";
-
-    // Read CSV file
-    ifstream file(filename);
-    if (!file) {
-        cerr << "Error: Cannot open file " << filename << "\n";
-    }
-
-string line;
-    while (getline(file, line)) {
-        if (line.empty()) continue; // skip empty lines
-        int fieldCount = 0;
-        string *fields = parseCSVLine(line, fieldCount);
-        csvList.appendRow(fields, fieldCount);
-    }
-    file.close();
-
-    // Display CSV contents
-    cout << "\nDataset 3 Details:\n";
-    csvList.display();
-    
-}
-
-
-/*/ ------------------------------------
-// 2. Singly Linked List Implementation
-// ------------------------------------
-struct RecordB {
-    int age;
-    string *caretype;
-    int lengthofstay;
-    float basecost;
-    int daysVisit;
-    RecordB* next;
-}; // Structure of a dataset
-
-// Linked List class
-class LinkedList {
-private:
-    RecordB* head;
-
-public:
-    LinkedList() : head(nullptr) {}
-
-    // Destructor to clean up memory
-    ~LinkedList() {
-        RecordB* current = head;
-        while (current != nullptr) {
-            RecordB* nextNode = current->next;
-            delete current;
-            current = nextNode;
-        }
-    }
-
-    // Append a new node at the end of the list
-    void append(string caretype,
-    int lengthofstay,
-    float basecost,
-    int daysVisit) {
-        RecordB *newNode = new RecordB;
-        newNode->caretype = caretype;
-        newNode->lengthofstay = lengthofstay;
-        newNode->basecost = basecost;
-        newNode->daysVisit = daysVisit;
-        newNode->next = nullptr;
-
-        if (!head) {
-            head = newNode;
-        } else {
-            RecordB *temp = head;
-            while (temp->next) temp = temp->next;
-            temp->next = newNode;
-        }
-    }
-
-    // Display all rows
-    void display() const {
-    RecordB *temp = head;
-
-    // 1. Fix width outside the looping
-    cout << left 
-         << "| " << setw(5)  << "Age"
-         << " | " << setw(15) << "Care Type"
-         << " | " << setw(16) << "Length of Stay"
-         << " | " << setw(11) << "Base Cost"
-         << " | " << setw(12) << "Days Visit" << " |\n";
-
-    // Header separator line
-    cout << string(75, '-') << "\n";
-
-    // 2. Loop through nodes and print rows horizontally
-    while (temp) {
-        cout << "| ";
-        
-        for (int i = 0; i < temp->fieldCount; ++i) {
-            // Match column widths with header
-            int width = 10;
-            if (i == 0) width = 5;       // Age
-            else if (i == 1) width = 15; // Care Type
-            else if (i == 2) width = 16; // Length of Stay
-            else if (i == 3) width = 11; // Base Cost
-            else if (i == 4) width = 12; // Days Visit
-
-            cout << left << setw(width) << temp->fields[i] << " | ";
-        }
-// single line separateion
-        cout << "\n";
-        temp = temp->next; //to allow for A
-    }
-    // Closing separator line
-    cout << string(75, '-') << "\n";
-}
-};
-
-void creater() {
-    LinkedList list;
-    
-    // Open the file
-    ifstream file("dataset2facility_b.csv");
-
-    // Check if the file opened successfully
-    if (!file.is_open()) {
-        cerr << "Error: Could not open the file.\n";
-    }
-
-string line;
-    while (getline(file, line)) {
-        if (line.empty()) continue; // skip empty lines
-        int fieldCount = 0;
-        string *fields = parseCSVLine(line, fieldCount);
-        list.append(fields, fieldCount);
-    }
-    file.close();
-
-    // Display CSV contents
-    cout << "\nDataset 2 Details:\n";
-   
-    list.display();
-};*/
-
 // Node structure for the linked list
 struct BaseCost {
     double data;
@@ -743,6 +490,28 @@ void stayB() {
     inFile.close();
 
     // Compute total and average from linked list
+    numList.calculateStat();
+
+}
+
+void stayC(){
+    string file = "StayLengthC.csv";
+    ifstream f(file);
+    if(!f.is_open()){
+        cerr << "File unfounded "<<endl;
+    }
+    NumbersLinkedList numList;
+    string token;
+
+    // Read word by word (whitespace-delimited)
+    while (f >> token) {
+        int  val;
+        // Extract numbers and ignore text characters
+        if (tryParseDouble2(token, val)) {
+            numList.insertion(val);
+        }   
+    }
+    f.close();
     numList.calculateStat();
 
 }
