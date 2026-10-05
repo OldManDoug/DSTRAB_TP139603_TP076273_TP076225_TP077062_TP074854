@@ -31,11 +31,71 @@ void loadAndShow(ArrayData& dataset, const string& title, const string& filename
     }
 }
 
+// LoadIfEmpty - load a dataset quietly (no table) when it has no records yet; false if the file cannot be read
+bool loadIfEmpty(ArrayData& dataset, const string& filename) {
+    if (dataset.getCount() > 0) {
+        return true;
+    }
+    return dataset.loadFromFile(filename);
+}
+
+// EnsureAllLoaded - make sure all three datasets are in memory, so any menu option can be chosen first
+bool ensureAllLoaded(ArrayData& datasetA, ArrayData& datasetB, ArrayData& datasetC) {
+    bool loadedA = loadIfEmpty(datasetA, "dataset1facility_a.csv");
+    bool loadedB = loadIfEmpty(datasetB, "dataset2facility_b.csv");
+    bool loadedC = loadIfEmpty(datasetC, "dataset3facility_c.csv");
+    return loadedA && loadedB && loadedC;
+}
+
+// RunSortingExperiment - sort menu: pick a field and order, time insertion sort and merge sort on all datasets,
+// then show the menu again until the user chooses Back
+void runSortingExperiment(ArrayData& datasetA, ArrayData& datasetB, ArrayData& datasetC) {
+    int field;
+    do {
+        cout << "\n===== SORT BY =====" << endl;
+        cout << "1. Age" << endl;
+        cout << "2. Visit Duration (Length of Stay)" << endl;
+        cout << "3. Total Medical Cost" << endl;
+        cout << "0. Back" << endl;
+        cout << "Field: ";
+        field = readChoice();
+
+        if (field == 0) {
+            break;
+        }
+        if (field < 1 || field > 3) {
+            cout << "Invalid field, try again." << endl;
+            continue;
+        }
+
+        cout << "\n===== ORDER =====" << endl;
+        cout << "1. Ascending" << endl;
+        cout << "2. Descending" << endl;
+        cout << "Order: ";
+        int order = readChoice();
+        if (order != 1 && order != 2) {
+            cout << "Invalid order, try again." << endl;
+            continue;
+        }
+        if (!ensureAllLoaded(datasetA, datasetB, datasetC)) {
+            return;
+        }
+
+        bool ascending = (order == 1);
+        displaySortExperiment(datasetA, "Dataset A", field, field, ascending);
+        displaySortExperiment(datasetB, "Dataset B", field, field, ascending);
+        displaySortExperiment(datasetC, "Dataset C", field, field, ascending);
+    } while (field != 0);
+}
+
 void runArrayMenu(ArrayData& datasetA, ArrayData& datasetB, ArrayData& datasetC) {
     int choice;
     do {
         cout << "\n===== ARRAY MENU =====" << endl;
-        cout << "1. Load and display all datasets (A, B, C)" << endl;
+        cout << "1. Display all datasets (A, B, C)" << endl;
+        cout << "2. Age group and billing analysis" << endl;
+        cout << "3. Healthcare expenditure analysis" << endl;
+        cout << "4. Sorting experiments (insertion sort vs merge sort)" << endl;
         cout << "0. Back" << endl;
         cout << "Choice: ";
         choice = readChoice();
@@ -45,6 +105,24 @@ void runArrayMenu(ArrayData& datasetA, ArrayData& datasetB, ArrayData& datasetC)
                 loadAndShow(datasetA, "Dataset A details", "dataset1facility_a.csv");
                 loadAndShow(datasetB, "Dataset B details", "dataset2facility_b.csv");
                 loadAndShow(datasetC, "Dataset C details", "dataset3facility_c.csv");
+                break;
+            case 2:
+                if (ensureAllLoaded(datasetA, datasetB, datasetC)) {
+                    datasetA.displayAgeGroupAnalysis("Dataset A");
+                    datasetB.displayAgeGroupAnalysis("Dataset B");
+                    datasetC.displayAgeGroupAnalysis("Dataset C");
+                }
+                break;
+            case 3:
+                if (ensureAllLoaded(datasetA, datasetB, datasetC)) {
+                    datasetA.displayExpenditure("Dataset A");
+                    datasetB.displayExpenditure("Dataset B");
+                    datasetC.displayExpenditure("Dataset C");
+                    displayDatasetComparison(datasetA, datasetB, datasetC);
+                }
+                break;
+            case 4:
+                runSortingExperiment(datasetA, datasetB, datasetC);
                 break;
             case 0: break;
             default: cout << "Invalid choice, try again." << endl;
