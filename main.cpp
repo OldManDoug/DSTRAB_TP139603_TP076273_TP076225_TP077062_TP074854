@@ -3,7 +3,8 @@
 #include "lists.hpp" //include header file, which is where your main code is. GeeksforGeeks. (2020, July 23). Header Files in C++. GeeksforGeeks. https://www.geeksforgeeks.org/cpp/header-files-in-c-c-with-examples/
 #include <string>
 #include "listdatasetab.hpp"
-#include "array.hpp"
+#include "arrayDataSet.hpp"
+#include "arraySort.hpp"
 #include <ctime>
 using namespace std; // to avoid repeating std:: before every standard library function
 
@@ -23,33 +24,11 @@ int readChoice() {
 
 // ---------------- ARRAY PART ----------------
 
-// LoadAndShow - load one CSV into a dataset, then print its table
-void loadAndShow(ArrayData& dataset, const string& title, const string& filename) {
-    cout << "\n" << title << endl;
-    if (dataset.loadFromFile(filename)) {
-        dataset.display();
-    }
-}
-
-// LoadIfEmpty - load a dataset quietly (no table) when it has no records yet; false if the file cannot be read
-bool loadIfEmpty(ArrayData& dataset, const string& filename) {
-    if (dataset.getCount() > 0) {
-        return true;
-    }
-    return dataset.loadFromFile(filename);
-}
-
-// EnsureAllLoaded - make sure all three datasets are in memory, so any menu option can be chosen first
-bool ensureAllLoaded(ArrayData& datasetA, ArrayData& datasetB, ArrayData& datasetC) {
-    bool loadedA = loadIfEmpty(datasetA, "dataset1facility_a.csv");
-    bool loadedB = loadIfEmpty(datasetB, "dataset2facility_b.csv");
-    bool loadedC = loadIfEmpty(datasetC, "dataset3facility_c.csv");
-    return loadedA && loadedB && loadedC;
-}
+// (loading and displaying a dataset is in arrayDataSet.hpp; analysis and sorting are in arraySort.hpp)
 
 // RunSortingExperiment - sort menu: pick a field and order, time insertion sort and merge sort on all datasets,
 // then show the menu again until the user chooses Back
-void runSortingExperiment(ArrayData& datasetA, ArrayData& datasetB, ArrayData& datasetC) {
+void runSortingExperiment(ArraySort& datasetA, ArraySort& datasetB, ArraySort& datasetC) {
     int field;
     do {
         cout << "\n===== SORT BY =====" << endl;
@@ -88,32 +67,38 @@ void runSortingExperiment(ArrayData& datasetA, ArrayData& datasetB, ArrayData& d
     } while (field != 0);
 }
 
-void runArrayMenu(ArrayData& datasetA, ArrayData& datasetB, ArrayData& datasetC) {
+void runArrayMenu(ArraySort& datasetA, ArraySort& datasetB, ArraySort& datasetC) {
     int choice;
     do {
         cout << "\n===== ARRAY MENU =====" << endl;
-        cout << "1. Display all datasets (A, B, C)" << endl;
-        cout << "2. Age group and billing analysis" << endl;
-        cout << "3. Healthcare expenditure analysis" << endl;
-        cout << "4. Sorting experiments (insertion sort vs merge sort)" << endl;
+        cout << "1. Display Dataset A" << endl;
+        cout << "2. Display Dataset B" << endl;
+        cout << "3. Display Dataset C" << endl;
+        cout << "4. Age group and billing analysis" << endl;
+        cout << "5. Healthcare expenditure analysis" << endl;
+        cout << "6. Sorting experiments (insertion sort vs merge sort)" << endl;
         cout << "0. Back" << endl;
         cout << "Choice: ";
         choice = readChoice();
 
         switch (choice) {
             case 1:
-                loadAndShow(datasetA, "Dataset A details", "dataset1facility_a.csv");
-                loadAndShow(datasetB, "Dataset B details", "dataset2facility_b.csv");
-                loadAndShow(datasetC, "Dataset C details", "dataset3facility_c.csv");
+                showDataset(datasetA, "Dataset A details", "dataset1facility_a.csv");
                 break;
             case 2:
+                showDataset(datasetB, "Dataset B details", "dataset2facility_b.csv");
+                break;
+            case 3:
+                showDataset(datasetC, "Dataset C details", "dataset3facility_c.csv");
+                break;
+            case 4:
                 if (ensureAllLoaded(datasetA, datasetB, datasetC)) {
                     datasetA.displayAgeGroupAnalysis("Dataset A");
                     datasetB.displayAgeGroupAnalysis("Dataset B");
                     datasetC.displayAgeGroupAnalysis("Dataset C");
                 }
                 break;
-            case 3:
+            case 5:
                 if (ensureAllLoaded(datasetA, datasetB, datasetC)) {
                     datasetA.displayExpenditure("Dataset A");
                     datasetB.displayExpenditure("Dataset B");
@@ -121,7 +106,7 @@ void runArrayMenu(ArrayData& datasetA, ArrayData& datasetB, ArrayData& datasetC)
                     displayDatasetComparison(datasetA, datasetB, datasetC);
                 }
                 break;
-            case 4:
+            case 6:
                 runSortingExperiment(datasetA, datasetB, datasetC);
                 break;
             case 0: break;
@@ -241,7 +226,7 @@ void runLinkedListMenu(PatientList& listA, PatientList& listB, PatientList& list
 // ---------------- MAIN MENU ----------------
 
 int main() {
-    ArrayData datasetA, datasetB, datasetC;
+    ArraySort datasetA, datasetB, datasetC;
     PatientList listA, listB, listC;
 
     int choice;
