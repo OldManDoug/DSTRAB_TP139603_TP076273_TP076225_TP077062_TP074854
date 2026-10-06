@@ -6,6 +6,8 @@
 #include "arrayDataSet.hpp"
 #include "arraySort.hpp"
 #include "sortCompare.hpp"
+#include "LinkedListSearch.hpp"
+#include "searchCompare.hpp"
 #include <ctime>
 using namespace std; // to avoid repeating std:: before every standard library function
 
@@ -223,6 +225,7 @@ void runLinkedListMenu(PatientList& listA, PatientList& listB, PatientList& list
         cout << "6. Age group and billing analysis" << endl;
         cout << "7. Healthcare expenditure analysis" << endl;
         cout << "8. Clinical insights" << endl;
+        cout << "9. Searching experiments (unsorted vs sorted)" << endl;
         cout << "0. Back" << endl;
         cout << "Choice: ";
         choice = readChoice();
@@ -259,6 +262,7 @@ void runLinkedListMenu(PatientList& listA, PatientList& listB, PatientList& list
                     displayListClinicalInsights(listA, listB, listC);
                 }
                 break;
+            case 9: runListSearchMenu(listA, listB, listC); break;
             case 0: break;
             default: cout << "Invalid choice, try again." << endl;
         }
@@ -300,6 +304,25 @@ void runStructureComparison(ArraySort& datasetA, ArraySort& datasetB, ArraySort&
     } while (field != 0);
 }
 
+// RunSearchComparison - search menu
+void runSearchComparison(ArraySort& datasetA, ArraySort& datasetB, ArraySort& datasetC,
+                         PatientList& listA, PatientList& listB, PatientList& listC) {
+    int status;
+    do {
+        ListSearchQuery query;
+        status = chooseListSearchQuery(query, "COMPARE BY");
+        if (status != 1) {
+            continue;
+        }
+        if (!ensureAllLoaded(datasetA, datasetB, datasetC) || !ensureAllListsLoaded(listA, listB, listC)) {
+            return;
+        }
+        displaySearchComparison(datasetA, listA, "Dataset A", query);
+        displaySearchComparison(datasetB, listB, "Dataset B", query);
+        displaySearchComparison(datasetC, listC, "Dataset C", query);
+    } while (status != 0);
+}
+
 // ---------------- MAIN MENU ----------------
 
 int main() {
@@ -312,6 +335,7 @@ int main() {
         cout << "1. Array" << endl;
         cout << "2. Linked List" << endl;
         cout << "3. Compare Array vs Linked List (sorting)" << endl;
+        cout << "4. Compare Array vs Linked List (searching)" << endl;
         cout << "0. Exit" << endl;
         cout << "Choice: ";
         choice = readChoice();
@@ -320,6 +344,7 @@ int main() {
             case 1: runArrayMenu(datasetA, datasetB, datasetC); break;
             case 2: runLinkedListMenu(listA, listB, listC); break;
             case 3: runStructureComparison(datasetA, datasetB, datasetC, listA, listB, listC); break;
+            case 4: runSearchComparison(datasetA, datasetB, datasetC, listA, listB, listC); break;
             case 0: cout << "Goodbye." << endl; break;
             default: cout << "Invalid choice, try again." << endl;
         }

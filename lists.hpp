@@ -866,6 +866,10 @@ public:
         return count;
     }
 
+    const PatientNode* getHead() const {
+        return head;
+    }
+
     // AgeGroupIndex - map an age to group 0-4, or -1 if the age is outside 0-100
     static int ageGroupIndex(int age) {   // O(1)
         if (age < 0 || age > 100) {
