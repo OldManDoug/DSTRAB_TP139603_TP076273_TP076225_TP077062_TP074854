@@ -5,6 +5,7 @@
 #include "listdatasetab.hpp"
 #include "arrayDataSet.hpp"
 #include "arraySort.hpp"
+#include "sortCompare.hpp"
 #include <ctime>
 using namespace std; // to avoid repeating std:: before every standard library function
 
@@ -24,10 +25,10 @@ int readChoice() {
 
 // ---------------- ARRAY PART ----------------
 
-// (loading and displaying a dataset is in arrayDataSet.hpp; analysis and sorting are in arraySort.hpp)
+// loading and displaying a dataset is in arrayDataSet.hpp
+// analysis and sorting are in arraySort.hpp
 
-// RunSortingExperiment - sort menu: pick a field and order, time insertion sort and merge sort on all datasets,
-// then show the menu again until the user chooses Back
+// runSortingExperiment - sort menu: pick a field and order, time insertion sort and merge sort on all datasets,
 void runSortingExperiment(ArraySort& datasetA, ArraySort& datasetB, ArraySort& datasetC) {
     int field;
     do {
@@ -77,6 +78,7 @@ void runArrayMenu(ArraySort& datasetA, ArraySort& datasetB, ArraySort& datasetC)
         cout << "4. Age group and billing analysis" << endl;
         cout << "5. Healthcare expenditure analysis" << endl;
         cout << "6. Sorting experiments (insertion sort vs merge sort)" << endl;
+        cout << "7. Clinical insights" << endl;
         cout << "0. Back" << endl;
         cout << "Choice: ";
         choice = readChoice();
@@ -108,6 +110,11 @@ void runArrayMenu(ArraySort& datasetA, ArraySort& datasetB, ArraySort& datasetC)
                 break;
             case 6:
                 runSortingExperiment(datasetA, datasetB, datasetC);
+                break;
+            case 7:
+                if (ensureAllLoaded(datasetA, datasetB, datasetC)) {
+                    displayClinicalInsights(datasetA, datasetB, datasetC);
+                }
                 break;
             case 0: break;
             default: cout << "Invalid choice, try again." << endl;
@@ -223,6 +230,41 @@ void runLinkedListMenu(PatientList& listA, PatientList& listB, PatientList& list
     } while (choice != 0);
 }
 
+// ---------------- ARRAY VS LINKED LIST COMPARISON ----------------
+
+// RunStructureComparison - sort menu: pick a field, then compare the array and the singly linked list
+// side by side on every dataset; shows the menu again until the user chooses Back
+void runStructureComparison(ArraySort& datasetA, ArraySort& datasetB, ArraySort& datasetC,
+                            PatientList& listA, PatientList& listB, PatientList& listC) {
+    int field;
+    do {
+        cout << "\n===== COMPARE BY =====" << endl;
+        cout << "1. Age" << endl;
+        cout << "2. Visit Duration" << endl;
+        cout << "3. Total Cost" << endl;
+        cout << "0. Back" << endl;
+        cout << "Field: ";
+        field = readChoice();
+
+        if (field == 0) {
+            break;
+        }
+        if (field < 1 || field > 3) {
+            cout << "Invalid field, try again." << endl;
+            continue;
+        }
+
+        if (!ensureAllLoaded(datasetA, datasetB, datasetC) || !ensureAllListsLoaded(listA, listB, listC)) {
+            return;
+        }
+
+        // The comparison always sorts in ascending order, so no order menu is needed
+        displaySortComparison(datasetA, listA, "Dataset A", field, true);
+        displaySortComparison(datasetB, listB, "Dataset B", field, true);
+        displaySortComparison(datasetC, listC, "Dataset C", field, true);
+    } while (field != 0);
+}
+
 // ---------------- MAIN MENU ----------------
 
 int main() {
@@ -234,6 +276,7 @@ int main() {
         cout << "\n===== DSTR ASSIGNMENT =====" << endl;
         cout << "1. Array" << endl;
         cout << "2. Linked List" << endl;
+        cout << "3. Compare Array vs Linked List (sorting)" << endl;
         cout << "0. Exit" << endl;
         cout << "Choice: ";
         choice = readChoice();
@@ -241,6 +284,7 @@ int main() {
         switch (choice) {
             case 1: runArrayMenu(datasetA, datasetB, datasetC); break;
             case 2: runLinkedListMenu(listA, listB, listC); break;
+            case 3: runStructureComparison(datasetA, datasetB, datasetC, listA, listB, listC); break;
             case 0: cout << "Goodbye." << endl; break;
             default: cout << "Invalid choice, try again." << endl;
         }

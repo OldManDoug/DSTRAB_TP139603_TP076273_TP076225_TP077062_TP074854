@@ -104,6 +104,17 @@ struct CareTally {
         }
         return best;
     }
+
+    // HighestCount - the biggest patient count of any care type (0 when the tally is empty)
+    int highestCount() const {   // O(c)
+        int highest = 0;
+        for (int i = 0; i < used; i++) {
+            if (counts[i] > highest) {
+                highest = counts[i];
+            }
+        }
+        return highest;
+    }
 };
 
 // Class definition - ArrayData plus age group analysis, expenditure analysis and sorting
@@ -199,6 +210,13 @@ public:
             sum += data[i].daysVisitsPerYear;
         }
         return sum / count;
+    }
+
+    // TallyCareTypes - add every record of this dataset to a care type tally (patients and cost per care type)
+    void tallyCareTypes(CareTally& tally) const {   // O(n * c)
+        for (int i = 0; i < count; i++) {
+            tally.add(data[i].careType, data[i].totalCost);
+        }
     }
 
     // DisplayAgeGroupAnalysis - per age group: care type table, total cost, average cost, most requested care type
@@ -571,6 +589,125 @@ inline void displayDatasetComparison(const ArraySort& a, const ArraySort& b, con
         }
         cout << string(groupWidth, '-') << "\n";
     }
+}
+
+// HighestBillingGroups - the age group(s) with the highest total cost; groups without patients are ignored
+inline string highestBillingGroups(const GroupStats groups[], double& highestCost) {
+    highestCost = -1;
+    for (int g = 0; g < 5; g++) {
+        if (groups[g].patientCount > 0 && groups[g].totalCost > highestCost) {
+            highestCost = groups[g].totalCost;
+        }
+    }
+    string result = "";
+    for (int g = 0; g < 5; g++) {
+        if (groups[g].patientCount > 0 && groups[g].totalCost == highestCost) {
+            if (result != "") {
+                result += " / ";
+            }
+            result += ArraySort::ageGroupRange(g);
+        }
+    }
+    if (result == "") {
+        highestCost = 0;
+        return "none";
+    }
+    return result;
+}
+
+// DisplayClinicalInsights - compare treatment costs and service preferences across datasets and age groups,
+// then identify the highest-billing age group and the highest-traffic care type
+inline void displayClinicalInsights(const ArraySort& a, const ArraySort& b, const ArraySort& c) {
+    const ArraySort* sets[3] = { &a, &b, &c };
+    const string labels[3] = { "Dataset A", "Dataset B", "Dataset C" };
+    GroupStats stats[3][5];
+    CareTally groupTallies[3][5];
+    CareTally careTally[3];
+    CareTally allCare;          // care types of all three datasets together
+    int outOfRange;
+    for (int d = 0; d < 3; d++) {
+        sets[d]->analyseAgeGroups(stats[d], groupTallies[d], outOfRange);
+        sets[d]->tallyCareTypes(careTally[d]);
+        sets[d]->tallyCareTypes(allCare);
+    }
+
+    cout << "\n=== Clinical Insights ===" << endl;
+
+    // Table 1 - treatment cost: total cost of each age group in each dataset
+    const int averageWidth = 71;
+    cout << "\nTotal Cost by Age Group (RM)" << endl;
+    cout << string(averageWidth, '-') << "\n";
+    cout << left << "| " << setw(10) << "Age Group";
+    for (int d = 0; d < 3; d++) {
+        cout << " | " << setw(16) << labels[d];
+    }
+    cout << " |\n";
+    cout << string(averageWidth, '-') << "\n";
+    for (int g = 0; g < 5; g++) {
+        cout << "| " << setw(10) << ArraySort::ageGroupRange(g);
+        for (int d = 0; d < 3; d++) {
+            string cell = "-";
+            if (stats[d][g].patientCount > 0) {
+                cell = numberText(stats[d][g].totalCost, 2);
+            }
+            cout << " | " << setw(16) << cell;
+        }
+        cout << " |\n";
+    }
+    cout << string(averageWidth, '-') << "\n";
+
+    // Table 2 - service preference: most requested care type in each age group and dataset
+    const int preferenceWidth = 89;
+    cout << "\nPreferred (Most Requested) Care Type by Age Group" << endl;
+    cout << string(preferenceWidth, '-') << "\n";
+    cout << left << "| " << setw(10) << "Age Group";
+    for (int d = 0; d < 3; d++) {
+        cout << " | " << setw(22) << labels[d];
+    }
+    cout << " |\n";
+    cout << string(preferenceWidth, '-') << "\n";
+    for (int g = 0; g < 5; g++) {
+        cout << "| " << setw(10) << ArraySort::ageGroupRange(g);
+        for (int d = 0; d < 3; d++) {
+            string cell = "-";
+            if (stats[d][g].patientCount > 0) {
+                cell = groupTallies[d][g].mostRequested();
+            }
+            cout << " | " << setw(22) << cell;
+        }
+        cout << " |\n";
+    }
+    cout << string(preferenceWidth, '-') << "\n";
+
+    // Table 3 - findings: highest-billing age group and highest-traffic care type
+    GroupStats allGroups[5];    // age groups of all three datasets together
+    for (int g = 0; g < 5; g++) {
+        for (int d = 0; d < 3; d++) {
+            allGroups[g].patientCount += stats[d][g].patientCount;
+            allGroups[g].totalCost += stats[d][g].totalCost;
+        }
+    }
+    const int findingWidth = 97;
+    cout << "\nHighest Billing and Highest Patient Traffic" << endl;
+    cout << string(findingWidth, '-') << "\n";
+    cout << left << "| " << setw(13) << "Dataset"
+         << " | " << setw(25) << "Highest-Billing Age Group"
+         << " | " << setw(12) << "Billing (RM)"
+         << " | " << setw(25) << "Highest-Traffic Care Type"
+         << " | " << setw(8) << "Patients" << " |\n";
+    cout << string(findingWidth, '-') << "\n";
+    for (int row = 0; row < 4; row++) {
+        const GroupStats* groups = (row < 3) ? stats[row] : allGroups;
+        const CareTally& tally = (row < 3) ? careTally[row] : allCare;
+        double highestCost;
+        string groupNames = highestBillingGroups(groups, highestCost);
+        cout << "| " << setw(13) << (row < 3 ? labels[row] : string("All datasets"))
+             << " | " << setw(25) << groupNames
+             << " | " << setw(12) << numberText(highestCost, 2)
+             << " | " << setw(25) << tally.mostRequested()
+             << " | " << setw(8) << tally.highestCount() << " |\n";
+    }
+    cout << string(findingWidth, '-') << "\n";
 }
 
 #endif

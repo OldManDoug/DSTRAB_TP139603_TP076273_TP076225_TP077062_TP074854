@@ -30,7 +30,7 @@ protected:
 
 private:
 
-    // Grow - double the capacity and copy the records across
+    // grow - double the capacity and copy the records across
     void grow() {   // O(n), but happens rarely so insertEnd is O(1) amortised
         int newCapacity = capacity * 2;
         Patient* newData = new Patient[newCapacity];
@@ -42,7 +42,7 @@ private:
         capacity = newCapacity;
     }
 
-    // Trim - remove spaces, tabs and line endings (\r) from both ends
+    // trim - remove spaces, tabs and line endings (\r) from both ends
     static string trim(const string& text) {
         const string whitespace = " \t\r\n";
         size_t first = text.find_first_not_of(whitespace);
@@ -53,7 +53,7 @@ private:
         return text.substr(first, last - first + 1);
     }
 
-    // ParseInt - true only if the WHOLE text is one integer
+    // parseInt - true only if the WHOLE text is one integer
     static bool parseInt(const string& text, int& value) {
         istringstream ss(text);
         char extra;
@@ -63,7 +63,7 @@ private:
         return !(ss >> extra);
     }
 
-    // ParseDouble - true only if the WHOLE text is one number
+    // parseDouble - true only if the WHOLE text is one number
     static bool parseDouble(const string& text, double& value) {
         istringstream ss(text);
         char extra;
@@ -73,7 +73,7 @@ private:
         return !(ss >> extra);
     }
 
-    // ParseRecord - split one CSV line into a Patient, or explain why not
+    // parseRecord - handles invalid numbers and wrong field counts for each line
     static bool parseRecord(const string& line, Patient& p, string& reason) {
         string fields[5];
         int fieldCount = 0;
@@ -116,7 +116,7 @@ private:
     }
 
 public:
-    // Constructor - start with room for 16 records
+    // Constructor - start with 16 records then double using grow()
     ArrayData() : data(new Patient[16]), count(0), capacity(16) {}
 
     // Copy constructor - deep copy so a sort on the copy leaves the original alone
@@ -263,6 +263,7 @@ public:
     }
 };
 
+// TylerMSFT. (2024, January 22). Inline Functions (C++). Learn.Microsoft.Com. https://learn.microsoft.com/en-us/cpp/cpp/inline-functions-cpp?view=msvc-170
 // LoadIfEmpty - load a dataset quietly (no table) when it has no records yet; false if the file cannot be read
 inline bool loadIfEmpty(ArrayData& dataset, const string& filename) {
     if (dataset.getCount() > 0) {
