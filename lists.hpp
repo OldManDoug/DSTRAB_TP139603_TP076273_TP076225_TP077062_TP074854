@@ -985,7 +985,7 @@ inline void displayListSortExperiment(const PatientList& original, const string&
                  << " | " << setw(15) << (useMerge ? "O(n log n)" : "O(n^2)")
                  << " | " << setw(13) << listNumberText(nanoseconds, 0)
                  << " | " << setw(11) << stats.comparisons
-                 << " | " << setw(16) << extraBytes << " |\n";
+                 << " | " << setw(16) << (original.nodeBytes() + extraBytes) << " |\n";   // nodes + temporary storage
         }
     }
     cout << string(ruleWidth, '-') << "\n";
