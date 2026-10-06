@@ -215,15 +215,15 @@ void runLinkedListMenu(PatientList& listA, PatientList& listB, PatientList& list
     int choice;
     do {
         cout << "\n===== LINKED LIST MENU =====" << endl;
-        cout << "1. Sorting experiments (insertion sort vs merge sort)" << endl;
-        cout << "2. Linked list demo (teammates)" << endl;
+        cout << "1. Linked list demo (teammates)" << endl;
+        cout << "2. Sorting experiments (insertion sort vs merge sort)" << endl;
         cout << "0. Back" << endl;
         cout << "Choice: ";
         choice = readChoice();
 
         switch (choice) {
-            case 1: runListSortingExperiment(listA, listB, listC); break;
-            case 2: runLinkedListDemo(); break;
+            case 1: runLinkedListDemo(); break;
+            case 2: runListSortingExperiment(listA, listB, listC); break;
             case 0: break;
             default: cout << "Invalid choice, try again." << endl;
         }
@@ -236,7 +236,7 @@ void runLinkedListMenu(PatientList& listA, PatientList& listB, PatientList& list
 // side by side on every dataset; shows the menu again until the user chooses Back
 void runStructureComparison(ArraySort& datasetA, ArraySort& datasetB, ArraySort& datasetC,
                             PatientList& listA, PatientList& listB, PatientList& listC) {
-    int field;
+    int voidfield;
     do {
         cout << "\n===== COMPARE BY =====" << endl;
         cout << "1. Age" << endl;
