@@ -218,38 +218,37 @@ void runLinkedListMenu(PatientList& listA, PatientList& listB, PatientList& list
     do {
         cout << "\n===== LINKED LIST MENU =====" << endl;
         cout << "1. Linked list demo (teammates)" << endl;
-        cout << "2. Sorting experiments (insertion sort vs merge sort)" << endl;
-        cout << "3. Display Dataset A" << endl;
-        cout << "4. Display Dataset B" << endl;
-        cout << "5. Display Dataset C" << endl;
-        cout << "6. Age group and billing analysis" << endl;
-        cout << "7. Healthcare expenditure analysis" << endl;
-        cout << "8. Clinical insights" << endl;
-        cout << "9. Searching experiments (unsorted vs sorted)" << endl;
+        cout << "2. Display Dataset A" << endl;
+        cout << "3. Display Dataset B" << endl;
+        cout << "4. Display Dataset C" << endl;
+        cout << "5. Age group and billing analysis" << endl;
+        cout << "6. Healthcare expenditure analysis" << endl;
+        cout << "7. Sorting experiments (insertion sort vs merge sort)" << endl;
+        cout << "8. Searching experiments (unsorted vs sorted)" << endl;
+        cout << "9. Clinical insights" << endl;
         cout << "0. Back" << endl;
         cout << "Choice: ";
         choice = readChoice();
 
         switch (choice) {
             case 1: runLinkedListDemo(); break;
-            case 2: runListSortingExperiment(listA, listB, listC); break;
-            case 3:
+            case 2:
                 if (loadListIfEmpty(listA, "dataset1facility_a.csv")) listA.display();
                 break;
-            case 4:
+            case 3:
                 if (loadListIfEmpty(listB, "dataset2facility_b.csv")) listB.display();
                 break;
-            case 5:
+            case 4:
                 if (loadListIfEmpty(listC, "dataset3facility_c.csv")) listC.display();
                 break;
-            case 6:
+            case 5:
                 if (ensureAllListsLoaded(listA, listB, listC)) {
                     listA.displayAgeGroupAnalysis("Dataset A");
                     listB.displayAgeGroupAnalysis("Dataset B");
                     listC.displayAgeGroupAnalysis("Dataset C");
                 }
                 break;
-            case 7:
+            case 6:
                 if (ensureAllListsLoaded(listA, listB, listC)) {
                     listA.displayExpenditure("Dataset A");
                     listB.displayExpenditure("Dataset B");
@@ -257,12 +256,13 @@ void runLinkedListMenu(PatientList& listA, PatientList& listB, PatientList& list
                     displayListDatasetComparison(listA, listB, listC);
                 }
                 break;
-            case 8:
+            case 7: runListSortingExperiment(listA, listB, listC); break;
+            case 8: runListSearchMenu(listA, listB, listC); break;
+            case 9:
                 if (ensureAllListsLoaded(listA, listB, listC)) {
                     displayListClinicalInsights(listA, listB, listC);
                 }
                 break;
-            case 9: runListSearchMenu(listA, listB, listC); break;
             case 0: break;
             default: cout << "Invalid choice, try again." << endl;
         }

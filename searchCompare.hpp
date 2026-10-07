@@ -55,13 +55,23 @@ inline double averageArraySearchNanoseconds(const Patient* records, int n, const
     volatile int sink = 0;
     int ignored = 0;
     double best = -1;
+    int runs = repeats;
     for (int round = 0; round < LIST_SEARCH_ROUNDS; round++) {
-        chrono::steady_clock::time_point start = chrono::steady_clock::now();
-        for (int r = 0; r < repeats; r++) {
-            sink = binary ? arrayBinarySearch(records, n, q, ignored) : arrayLinearSearch(records, n, q, ignored);
+        double elapsed = 0;
+        for (;;) {
+            chrono::steady_clock::time_point start = chrono::steady_clock::now();
+            for (int r = 0; r < runs; r++) {
+                sink = binary ? arrayBinarySearch(records, n, q, ignored) : arrayLinearSearch(records, n, q, ignored);
+            }
+            chrono::steady_clock::time_point stop = chrono::steady_clock::now();
+            elapsed = (double)chrono::duration_cast<chrono::nanoseconds>(stop - start).count();
+            // A round must last at least 20 ms, otherwise a coarse clock reads 0: repeat more and measure again
+            if (elapsed >= 20000000.0 || runs >= 100000000) {
+                break;
+            }
+            runs *= 2;
         }
-        chrono::steady_clock::time_point stop = chrono::steady_clock::now();
-        double average = (double)chrono::duration_cast<chrono::nanoseconds>(stop - start).count() / repeats;
+        double average = elapsed / runs;
         if (best < 0 || average < best) {
             best = average;
         }

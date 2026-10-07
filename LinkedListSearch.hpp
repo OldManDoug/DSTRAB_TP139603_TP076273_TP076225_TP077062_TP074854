@@ -39,7 +39,7 @@ struct ListSearchQuery {
 };
 
 // Settings
-const int LIST_SEARCH_RULE = 108;
+const int LIST_SEARCH_RULE = 101;
 const int LIST_SEARCH_REPEATS = 200;
 const int LIST_SEARCH_ROUNDS = 5;
 
@@ -58,8 +58,7 @@ inline string listSearchCriteriaText(const ListSearchQuery& q) {
 inline void printListSearchHeader(const string& title) {
     cout << "\n" << title << "\n";
     cout << string(LIST_SEARCH_RULE, '-') << "\n";
-    cout << left << "| " << setw(4) << "ID"
-         << " | " << setw(5) << "Age"
+    cout << left << "| " << setw(5) << "Age"
          << " | " << setw(15) << "Care Type"
          << " | " << setw(16) << "Length of Stay"
          << " | " << setw(11) << "Base Cost"
@@ -69,8 +68,7 @@ inline void printListSearchHeader(const string& title) {
 }
 
 inline void printListSearchRow(const ListPatient& p) {
-    cout << left << "| " << setw(4) << p.patientID
-         << " | " << setw(5) << p.age
+    cout << left << "| " << setw(5) << p.age
          << " | " << setw(15) << p.careType
          << " | " << setw(16) << p.lengthOfStay
          << " | " << setw(11) << p.baseCostPerHour
@@ -158,13 +156,23 @@ inline double averageListSearchNanoseconds(const PatientNode* head, const ListSe
     volatile int sink = 0;
     int ignored = 0;
     double best = -1;
+    int runs = repeats;
     for (int round = 0; round < LIST_SEARCH_ROUNDS; round++) {
-        chrono::steady_clock::time_point start = chrono::steady_clock::now();
-        for (int r = 0; r < repeats; r++) {
-            sink = runListSearch(head, q, isSorted, ascending, ignored, false);
+        double elapsed = 0;
+        for (;;) {
+            chrono::steady_clock::time_point start = chrono::steady_clock::now();
+            for (int r = 0; r < runs; r++) {
+                sink = runListSearch(head, q, isSorted, ascending, ignored, false);
+            }
+            chrono::steady_clock::time_point stop = chrono::steady_clock::now();
+            elapsed = (double)chrono::duration_cast<chrono::nanoseconds>(stop - start).count();
+            // A round must last at least 20 ms, otherwise a coarse clock reads 0: repeat more and measure again
+            if (elapsed >= 20000000.0 || runs >= 100000000) {
+                break;
+            }
+            runs *= 2;
         }
-        chrono::steady_clock::time_point stop = chrono::steady_clock::now();
-        double average = (double)chrono::duration_cast<chrono::nanoseconds>(stop - start).count() / repeats;
+        double average = elapsed / runs;
         if (best < 0 || average < best) {
             best = average;
         }
@@ -210,7 +218,7 @@ inline void displayListSearchExperiment(const PatientList& original, const strin
          << " | " << setw(6) << "Found"
          << " | " << setw(11) << "Comparisons"
          << " | " << setw(13) << "Avg Time (ns)"
-         << " | " << setw(16) << "Extra Memory (B)" << " |\n";
+         << " | " << setw(16) << "Memory Usage (B)" << " |\n";
     cout << string(ruleWidth, '-') << "\n";
     bool sameResult = true;
     for (int i = 0; i < rowCount; i++) {
@@ -226,7 +234,7 @@ inline void displayListSearchExperiment(const PatientList& original, const strin
              << " | " << setw(6) << found
              << " | " << setw(11) << comparisons
              << " | " << setw(13) << listNumberText(nanoseconds, 0)
-             << " | " << setw(16) << searchBytes << " |\n";
+             << " | " << setw(16) << (original.nodeBytes() + searchBytes) << " |\n";   // nodes + working memory
     }
     cout << string(ruleWidth, '-') << "\n";
     if (!sameResult) {
@@ -235,8 +243,8 @@ inline void displayListSearchExperiment(const PatientList& original, const strin
     cout << "List memory: " << original.getCount() << " nodes x " << sizeof(PatientNode) << " B = "
          << original.nodeBytes() << " B (next pointers alone: " << original.getCount() << " x "
          << sizeof(PatientNode*) << " B = " << original.getCount() * sizeof(PatientNode*) << " B)" << endl;
-    cout << "Avg Time = mean of " << LIST_SEARCH_REPEATS << " runs, best of " << LIST_SEARCH_ROUNDS
-         << " rounds; sort time not included (see sorting experiments)" << endl;
+    cout << "Avg Time = mean of one search, best of " << LIST_SEARCH_ROUNDS
+         << " rounds, each repeated for 20+ ms; sort time not included" << endl;
     if (q.type == LIST_SEARCH_CARE_TYPE) {
         cout << "Care Type is not a sort field, so the Age-sorted list cannot stop early" << endl;
     }

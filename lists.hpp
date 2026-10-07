@@ -1450,7 +1450,9 @@ inline void displayListClinicalInsights(const PatientList& a, const PatientList&
 inline double averageListSortNanoseconds(const PatientList& original, bool useMerge, int field, bool ascending,
                                          int repeats, ListSortStats& statsOut) {
     long long totalNs = 0;
-    for (int r = 0; r < repeats; r++) {
+    int runs = 0;
+    // Keep measuring past 'repeats' until at least 20 ms were timed, so a coarse clock cannot read 0
+    while (runs < repeats || (totalNs < 20000000 && runs < 100000)) {
         PatientList copy(original);     // copying is NOT timed
         chrono::steady_clock::time_point start = chrono::steady_clock::now();
         if (useMerge) {
@@ -1460,8 +1462,9 @@ inline double averageListSortNanoseconds(const PatientList& original, bool useMe
         }
         chrono::steady_clock::time_point stop = chrono::steady_clock::now();
         totalNs += chrono::duration_cast<chrono::nanoseconds>(stop - start).count();
+        runs++;
     }
-    return (double)totalNs / repeats;
+    return (double)totalNs / runs;
 }
 
 // DisplayListSortExperiment - time both sorts for fields firstField..lastField, then print the sorted list
