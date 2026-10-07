@@ -5,6 +5,7 @@
 #include "listdatasetab.hpp"
 #include "arrayDataSet.hpp"
 #include "arraySort.hpp"
+#include "arraySearch.hpp"
 #include <ctime>
 using namespace std; // to avoid repeating std:: before every standard library function
 
@@ -77,6 +78,7 @@ void runArrayMenu(ArraySort& datasetA, ArraySort& datasetB, ArraySort& datasetC)
         cout << "4. Age group and billing analysis" << endl;
         cout << "5. Healthcare expenditure analysis" << endl;
         cout << "6. Sorting experiments (insertion sort vs merge sort)" << endl;
+        cout << "7. Searching experiments (unsorted vs sorted)" << endl;
         cout << "0. Back" << endl;
         cout << "Choice: ";
         choice = readChoice();
@@ -108,6 +110,9 @@ void runArrayMenu(ArraySort& datasetA, ArraySort& datasetB, ArraySort& datasetC)
                 break;
             case 6:
                 runSortingExperiment(datasetA, datasetB, datasetC);
+                break;
+            case 7:
+                runArraySearchMenu(datasetA, datasetB, datasetC);
                 break;
             case 0: break;
             default: cout << "Invalid choice, try again." << endl;

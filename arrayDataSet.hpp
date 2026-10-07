@@ -116,6 +116,8 @@ private:
     }
 
 public:
+
+    const Patient* getData() const { return data; }
     // Constructor - start with room for 16 records
     ArrayData() : data(new Patient[16]), count(0), capacity(16) {}
 
