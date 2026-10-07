@@ -1,17 +1,18 @@
 #ifndef LINKED_LIST_SEARCH_HPP
 #define LINKED_LIST_SEARCH_HPP
 
-// Include after lists.hpp
 #include <iostream>
 #include <iomanip>
 #include <string>
 #include <chrono>
 using namespace std;
 
-// Search criteria
-const int SEARCH_AGE = 1;
-const int SEARCH_CARE = 2;
-const int SEARCH_LOS = 3;
+// Search criteria (also used by searchCompare.hpp)
+const int LIST_SEARCH_AGE_GROUP = 1;
+const int LIST_SEARCH_CARE_TYPE = 2;
+const int LIST_SEARCH_LOS = 3;
+const int LIST_SEARCH_REPEATS = 200;
+const int LIST_SEARCH_ROUNDS = 5;
 
 const int GROUP_COUNT = 5;
 const int GROUP_MIN[GROUP_COUNT] = { 0, 18, 26, 46, 61 };
@@ -23,10 +24,9 @@ const int CARE_COUNT = 6;
 const string CARE_TYPES[CARE_COUNT] = { "Emergency", "Outpatient", "Inpatient", "Vaccination", "Rehabilitation",
     "Routine Checkup" };
 
-const int SEARCH_REPEATS = 1000;
-const int SEARCH_WIDTH = 108;
+const int SEARCH_WIDTH = 101;
 
-struct SearchQuery {
+struct ListSearchQuery {
     int type;
     int minAge;
     int maxAge;
@@ -34,29 +34,29 @@ struct SearchQuery {
     int hours;
 };
 
-string queryText(SearchQuery& q) {
-    if (q.type == SEARCH_AGE) {
+string listSearchCriteriaText(const ListSearchQuery& q) {
+    if (q.type == LIST_SEARCH_AGE_GROUP) {
         return "Age " + to_string(q.minAge) + "-" + to_string(q.maxAge);
     }
-    if (q.type == SEARCH_CARE) {
+    if (q.type == LIST_SEARCH_CARE_TYPE) {
         return "Care Type = " + q.careType;
     }
     return "LOS > " + to_string(q.hours) + " hours";
 }
 
 // Record table
-void printHeader(string title) {
+void printHeader(const string& title) {
     cout << "\n" << title << "\n" << string(SEARCH_WIDTH, '-') << "\n";
-    cout << left << "| " << setw(4) << "ID" << " | " << setw(5) << "Age" << " | " << setw(15) << "Care Type"
-         << " | " << setw(16) << "Length of Stay" << " | " << setw(11) << "Base Cost" << " | " << setw(12)
-         << "Days Visit" << " | " << setw(23) << "Total Medical Cost (RM)" << " |\n";
+    cout << left << "| " << setw(5) << "Age" << " | " << setw(15) << "Care Type" << " | " << setw(16)
+         << "Length of Stay" << " | " << setw(11) << "Base Cost" << " | " << setw(12) << "Days Visit" << " | "
+         << setw(23) << "Total Medical Cost (RM)" << " |\n";
     cout << string(SEARCH_WIDTH, '-') << "\n";
 }
 
 void printRow(const ListPatient& p) {
-    cout << left << "| " << setw(4) << p.patientID << " | " << setw(5) << p.age << " | " << setw(15) << p.careType
-         << " | " << setw(16) << p.lengthOfStay << " | " << setw(11) << p.baseCostPerHour << " | " << setw(12)
-         << p.daysVisitsPerYear << " | " << setw(23) << listNumberText(p.totalCost, 2) << " |\n";
+    cout << left << "| " << setw(5) << p.age << " | " << setw(15) << p.careType << " | " << setw(16)
+         << p.lengthOfStay << " | " << setw(11) << p.baseCostPerHour << " | " << setw(12) << p.daysVisitsPerYear
+         << " | " << setw(23) << listNumberText(p.totalCost, 2) << " |\n";
 }
 
 // Searches
@@ -81,7 +81,7 @@ int searchAgeGroup(const PatientNode* head, int minAge, int maxAge, bool sorted,
     return found;
 }
 
-int searchCareType(const PatientNode* head, string& careType, int& comparisons, bool show) {
+int searchCareType(const PatientNode* head, const string& careType, int& comparisons, bool show) {
     int found = 0;
     comparisons = 0;
     const PatientNode* current = head;
@@ -113,72 +113,105 @@ int searchLOS(const PatientNode* head, int hours, bool sorted, bool ascending, i
     return found;
 }
 
-int runSearch(const PatientNode* head, SearchQuery& q, bool sorted, bool ascending, int& comparisons, bool show) {
-    if (q.type == SEARCH_AGE) {
+int runSearch(const PatientNode* head, const ListSearchQuery& q, bool sorted, bool ascending, int& comparisons,
+              bool show) {
+    if (q.type == LIST_SEARCH_AGE_GROUP) {
         return searchAgeGroup(head, q.minAge, q.maxAge, sorted, ascending, comparisons, show);
     }
-    if (q.type == SEARCH_CARE) {
+    if (q.type == LIST_SEARCH_CARE_TYPE) {
         return searchCareType(head, q.careType, comparisons, show);
     }
     return searchLOS(head, q.hours, sorted, ascending, comparisons, show);
 }
 
-// Timing: warm up first, then average of SEARCH_REPEATS runs
-double averageTime(const PatientNode* head, SearchQuery& q, bool sorted, bool ascending, int& found,
-                   int& comparisons) {
-    int ignore = 0;
-    for (int r = 0; r < SEARCH_REPEATS; r++) {
-        found = runSearch(head, q, sorted, ascending, comparisons, false);
+// Timing (same method as arraySearch.hpp): best of 5 rounds, each round runs for at least 20 ms
+double averageListSearchNanoseconds(const PatientNode* head, const ListSearchQuery& q, bool sorted, bool ascending,
+                                    int repeats, int& found, int& comparisons) {
+    found = runSearch(head, q, sorted, ascending, comparisons, false);
+    volatile int sink = 0;
+    int ignored = 0;
+    double best = -1;
+    int runs = repeats;
+    for (int round = 0; round < LIST_SEARCH_ROUNDS; round++) {
+        double elapsed = 0;
+        while (true) {
+            chrono::steady_clock::time_point start = chrono::steady_clock::now();
+            for (int r = 0; r < runs; r++) {
+                sink = runSearch(head, q, sorted, ascending, ignored, false);
+            }
+            chrono::steady_clock::time_point stop = chrono::steady_clock::now();
+            elapsed = (double)chrono::duration_cast<chrono::nanoseconds>(stop - start).count();
+            if (elapsed >= 20000000.0 || runs >= 100000000) {
+                break;
+            }
+            runs *= 2;
+        }
+        double average = elapsed / runs;
+        if (best < 0 || average < best) {
+            best = average;
+        }
     }
-    chrono::steady_clock::time_point start = chrono::steady_clock::now();
-    for (int r = 0; r < SEARCH_REPEATS; r++) {
-        runSearch(head, q, sorted, ascending, ignore, false);
-    }
-    chrono::steady_clock::time_point stop = chrono::steady_clock::now();
-    return (double)chrono::duration_cast<chrono::nanoseconds>(stop - start).count() / SEARCH_REPEATS;
+    (void)sink;
+    return best;
 }
 
 // One dataset: matching records + unsorted vs sorted performance
-void searchDataset(PatientList& list, string name, SearchQuery& q) {
+void searchDataset(const PatientList& list, const string& name, const ListSearchQuery& q) {
     int sortField = LIST_SORT_BY_AGE;
     string field = "Age";
-    if (q.type == SEARCH_LOS) {
+    if (q.type == LIST_SEARCH_LOS) {
         sortField = LIST_SORT_BY_DURATION;
         field = "LOS";
     }
+    string criteria = listSearchCriteriaText(q);
     PatientList asc(list);
     asc.mergeSort(sortField, true);
     PatientList desc(list);
     desc.mergeSort(sortField, false);
     int comparisons = 0;
-    printHeader("=== " + name + " - Search: " + queryText(q) + " ===");
-    int found = runSearch(asc.getHead(), q, true, true, comparisons, true);
-    if (found == 0) {
+    printHeader("=== " + name + " - Search: " + criteria + " ===");
+    int shown = runSearch(asc.getHead(), q, true, true, comparisons, true);
+    if (shown == 0) {
         cout << left << "| " << setw(SEARCH_WIDTH - 4) << "(no matching records)" << " |\n";
     }
     cout << string(SEARCH_WIDTH, '-') << "\n";
-    cout << "Showing " << found << " matching records (ordered by " << PatientList::sortFieldName(sortField) << ")"
+    cout << "Showing " << shown << " matching records (ordered by " << PatientList::sortFieldName(sortField) << ")"
          << endl;
 
-    PatientList* lists[3] = { &list, &asc, &desc };
+    const PatientList* lists[3] = { &list, &asc, &desc };
     string labels[3] = { "Unsorted", "Sorted (" + field + " asc)", "Sorted (" + field + " desc)" };
     int rows = 3;
-    if (q.type == SEARCH_CARE) {
+    if (q.type == LIST_SEARCH_CARE_TYPE) {
         rows = 2;
     }
-    cout << "\n--- " << name << " - Search Performance: " << queryText(q) << " ---\n" << string(79, '-') << "\n";
+    size_t memory = list.nodeBytes() + sizeof(const PatientNode*) + 2 * sizeof(int);
+    bool sameResult = true;
+    cout << "\n--- " << name << " - Search Performance: " << criteria << " ---\n" << string(79, '-') << "\n";
     cout << left << "| " << setw(17) << "List" << " | " << setw(6) << "Found" << " | " << setw(11) << "Comparisons"
-         << " | " << setw(13) << "Avg Time (ns)" << " | " << setw(16) << "Extra Memory (B)" << " |\n";
+         << " | " << setw(13) << "Avg Time (ns)" << " | " << setw(16) << "Memory Usage (B)" << " |\n";
     cout << string(79, '-') << "\n";
     for (int i = 0; i < rows; i++) {
-        double ns = averageTime(lists[i]->getHead(), q, i > 0, i != 2, found, comparisons);
+        int found = 0;
+        double ns = averageListSearchNanoseconds(lists[i]->getHead(), q, i > 0, i != 2, LIST_SEARCH_REPEATS, found,
+                                                 comparisons);
+        if (found != shown) {
+            sameResult = false;
+        }
         cout << "| " << setw(17) << labels[i] << " | " << setw(6) << found << " | " << setw(11) << comparisons
-             << " | " << setw(13) << listNumberText(ns, 0) << " | " << setw(16)
-             << sizeof(PatientNode*) + 2 * sizeof(int) << " |\n";
+             << " | " << setw(13) << listNumberText(ns, 0) << " | " << setw(16) << memory << " |\n";
     }
     cout << string(79, '-') << "\n";
+    if (!sameResult) {
+        cout << "WARNING: the lists returned different counts - check the sort order" << endl;
+    }
     cout << "List memory: " << list.getCount() << " nodes x " << sizeof(PatientNode) << " B = " << list.nodeBytes()
-         << " B (next pointers alone: " << list.getCount() * sizeof(PatientNode*) << " B)" << endl;
+         << " B (next pointers alone: " << list.getCount() << " x " << sizeof(PatientNode*) << " B = "
+         << list.getCount() * sizeof(PatientNode*) << " B)" << endl;
+    cout << "Avg Time = mean of one search, best of " << LIST_SEARCH_ROUNDS
+         << " rounds, each repeated for 20+ ms; sort time not included" << endl;
+    if (q.type == LIST_SEARCH_CARE_TYPE) {
+        cout << "Care Type is not a sort field, so the Age-sorted list cannot stop early" << endl;
+    }
 }
 
 // Menu
@@ -193,22 +226,22 @@ int readNumber() {
     return number;
 }
 
-int askQuery(SearchQuery& q) {
-    q.minAge = 0;
-    q.maxAge = 0;
-    q.careType = "";
-    q.hours = 0;
-    cout << "\n===== SEARCH BY =====" << endl;
+int chooseListSearchQuery(ListSearchQuery& query, const string& title) {
+    query.minAge = 0;
+    query.maxAge = 0;
+    query.careType = "";
+    query.hours = 0;
+    cout << "\n===== " << title << " =====" << endl;
     cout << "1. Age group" << endl;
     cout << "2. Care type" << endl;
     cout << "3. Visit duration (LOS > hours)" << endl;
     cout << "0. Back" << endl;
     cout << "Criterion: ";
-    q.type = readNumber();
-    if (q.type == 0) {
+    query.type = readNumber();
+    if (query.type == 0) {
         return 0;
     }
-    if (q.type == SEARCH_AGE) {
+    if (query.type == LIST_SEARCH_AGE_GROUP) {
         cout << "\n===== AGE GROUP =====" << endl;
         for (int g = 0; g < GROUP_COUNT; g++) {
             string range = to_string(GROUP_MIN[g]) + "-" + to_string(GROUP_MAX[g]);
@@ -220,9 +253,9 @@ int askQuery(SearchQuery& q) {
             cout << "Invalid group, try again." << endl;
             return -1;
         }
-        q.minAge = GROUP_MIN[choice - 1];
-        q.maxAge = GROUP_MAX[choice - 1];
-    } else if (q.type == SEARCH_CARE) {
+        query.minAge = GROUP_MIN[choice - 1];
+        query.maxAge = GROUP_MAX[choice - 1];
+    } else if (query.type == LIST_SEARCH_CARE_TYPE) {
         cout << "\n===== CARE TYPE =====" << endl;
         for (int t = 0; t < CARE_COUNT; t++) {
             cout << t + 1 << ". " << CARE_TYPES[t] << endl;
@@ -233,11 +266,11 @@ int askQuery(SearchQuery& q) {
             cout << "Invalid care type, try again." << endl;
             return -1;
         }
-        q.careType = CARE_TYPES[choice - 1];
-    } else if (q.type == SEARCH_LOS) {
+        query.careType = CARE_TYPES[choice - 1];
+    } else if (query.type == LIST_SEARCH_LOS) {
         cout << "Show patients who stayed MORE than how many hours? ";
-        q.hours = readNumber();
-        if (q.hours < 0) {
+        query.hours = readNumber();
+        if (query.hours < 0) {
             cout << "Invalid hours, try again." << endl;
             return -1;
         }
@@ -258,12 +291,12 @@ bool loadLists(PatientList& listA, PatientList& listB, PatientList& listC) {
 void runListSearchMenu(PatientList& listA, PatientList& listB, PatientList& listC) {
     int status;
     do {
-        SearchQuery q;
-        status = askQuery(q);
+        ListSearchQuery query;
+        status = chooseListSearchQuery(query, "SEARCH BY");
         if (status == 1 && loadLists(listA, listB, listC)) {
-            searchDataset(listA, "Dataset A", q);
-            searchDataset(listB, "Dataset B", q);
-            searchDataset(listC, "Dataset C", q);
+            searchDataset(listA, "Dataset A", query);
+            searchDataset(listB, "Dataset B", query);
+            searchDataset(listC, "Dataset C", query);
         }
     } while (status != 0);
 }
