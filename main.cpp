@@ -2,7 +2,6 @@
 #include<iostream> //libraries
 #include "lists.hpp" //include header file, which is where your main code is. GeeksforGeeks. (2020, July 23). Header Files in C++. GeeksforGeeks. https://www.geeksforgeeks.org/cpp/header-files-in-c-c-with-examples/
 #include <string>
-#include "listdatasetab.hpp"
 #include "arrayDataSet.hpp"
 #include "arraySort.hpp"
 #include "arraySearch.hpp"
@@ -81,11 +80,8 @@ void runArrayMenu(ArraySort& datasetA, ArraySort& datasetB, ArraySort& datasetC)
         cout << "4. Age group and billing analysis" << endl;
         cout << "5. Healthcare expenditure analysis" << endl;
         cout << "6. Sorting experiments (insertion sort vs merge sort)" << endl;
-<<<<<<< HEAD
         cout << "7. Searching experiments (unsorted vs sorted)" << endl;
-=======
-        cout << "7. Clinical insights" << endl;
->>>>>>> 238eed1d6b7d08e36d6356326ff51087a7aa42f4
+        cout << "8. Clinical insights" << endl;
         cout << "0. Back" << endl;
         cout << "Choice: ";
         choice = readChoice();
@@ -120,6 +116,8 @@ void runArrayMenu(ArraySort& datasetA, ArraySort& datasetB, ArraySort& datasetC)
                 break;
             case 7:
                 runArraySearchMenu(datasetA, datasetB, datasetC);
+                break;
+            case 8:
                 if (ensureAllLoaded(datasetA, datasetB, datasetC)) {
                     displayClinicalInsights(datasetA, datasetB, datasetC);
                 }
@@ -128,40 +126,6 @@ void runArrayMenu(ArraySort& datasetA, ArraySort& datasetB, ArraySort& datasetC)
             default: cout << "Invalid choice, try again." << endl;
         }
     } while (choice != 0);
-}
-
-// ---------------- LINKED LIST PART (teammate's demo, moved here unchanged) ----------------
-
-void runLinkedListDemo() {
-
-//IMPLEMENT AS A LIST - frmt slides learn dei.
-// Definition of a Node in a singly linked list - from GeeksforGeeks
-implements();
- //creater();
- check();
- days();
- 
-cout << "--- Double Linked List Contents ---" << endl;
-//age();
-clears();
-implementing();
-DoublyLinkedList<int> list;
-
-    list.push_back(10);
-    list.push_back(20);
-    list.push_back(30);
-    list.push_front(5);
-
-    list.print_forward();  // Outputs: 5 <-> 10 <-> 20 <-> 30 <-> nullptr
-    list.print_backward(); // Outputs: 30 <-> 20 <-> 10 <-> 5 <-> nullptr
-
-    list.remove(20);
-    list.print_forward();  // Outputs: 5 <-> 10 <-> 30 <-> nullptr
-
-    list.pop_front();
-    list.pop_back();
-    list.print_forward();  // Outputs: 10 <-> nullptr
-
 }
 
 // ---------------- LINKED LIST SORT PART ----------------
@@ -223,38 +187,36 @@ void runLinkedListMenu(PatientList& listA, PatientList& listB, PatientList& list
     int choice;
     do {
         cout << "\n===== LINKED LIST MENU =====" << endl;
-        cout << "1. Linked list demo (teammates)" << endl;
-        cout << "2. Display Dataset A" << endl;
-        cout << "3. Display Dataset B" << endl;
-        cout << "4. Display Dataset C" << endl;
-        cout << "5. Age group and billing analysis" << endl;
-        cout << "6. Healthcare expenditure analysis" << endl;
-        cout << "7. Sorting experiments (insertion sort vs merge sort)" << endl;
-        cout << "8. Searching experiments (unsorted vs sorted)" << endl;
-        cout << "9. Clinical insights" << endl;
+        cout << "1. Display Dataset A" << endl;
+        cout << "2. Display Dataset B" << endl;
+        cout << "3. Display Dataset C" << endl;
+        cout << "4. Age group and billing analysis" << endl;
+        cout << "5. Healthcare expenditure analysis" << endl;
+        cout << "6. Sorting experiments (insertion sort vs merge sort)" << endl;
+        cout << "7. Searching experiments (unsorted vs sorted)" << endl;
+        cout << "8. Clinical insights" << endl;
         cout << "0. Back" << endl;
         cout << "Choice: ";
         choice = readChoice();
 
         switch (choice) {
-            case 1: runLinkedListDemo(); break;
-            case 2:
+            case 1:
                 if (loadListIfEmpty(listA, "dataset1facility_a.csv")) listA.display();
                 break;
-            case 3:
+            case 2:
                 if (loadListIfEmpty(listB, "dataset2facility_b.csv")) listB.display();
                 break;
-            case 4:
+            case 3:
                 if (loadListIfEmpty(listC, "dataset3facility_c.csv")) listC.display();
                 break;
-            case 5:
+            case 4:
                 if (ensureAllListsLoaded(listA, listB, listC)) {
                     listA.displayAgeGroupAnalysis("Dataset A");
                     listB.displayAgeGroupAnalysis("Dataset B");
                     listC.displayAgeGroupAnalysis("Dataset C");
                 }
                 break;
-            case 6:
+            case 5:
                 if (ensureAllListsLoaded(listA, listB, listC)) {
                     listA.displayExpenditure("Dataset A");
                     listB.displayExpenditure("Dataset B");
@@ -262,9 +224,9 @@ void runLinkedListMenu(PatientList& listA, PatientList& listB, PatientList& list
                     displayListDatasetComparison(listA, listB, listC);
                 }
                 break;
-            case 7: runListSortingExperiment(listA, listB, listC); break;
-            case 8: runListSearchMenu(listA, listB, listC); break;
-            case 9:
+            case 6: runListSortingExperiment(listA, listB, listC); break;
+            case 7: runListSearchMenu(listA, listB, listC); break;
+            case 8:
                 if (ensureAllListsLoaded(listA, listB, listC)) {
                     displayListClinicalInsights(listA, listB, listC);
                 }

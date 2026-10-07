@@ -39,7 +39,7 @@ struct ArraySearchQuery {
 };
 
 // Benchmark experiment settings
-const int ARRAY_SEARCH_RULE = 108;
+const int ARRAY_SEARCH_RULE = 101;
 const int ARRAY_SEARCH_REPEATS = 200;
 const int ARRAY_SEARCH_ROUNDS = 5;
 
@@ -58,8 +58,7 @@ inline string arraySearchCriteriaText(const ArraySearchQuery& q) {
 inline void printArraySearchHeader(const string& title) {
     cout << "\n" << title << "\n";
     cout << string(ARRAY_SEARCH_RULE, '-') << "\n";
-    cout << left << "| " << setw(4) << "ID"
-         << " | " << setw(5) << "Age"
+    cout << left << "| " << setw(5) << "Age"
          << " | " << setw(15) << "Care Type"
          << " | " << setw(16) << "Length of Stay"
          << " | " << setw(11) << "Base Cost"
@@ -70,8 +69,7 @@ inline void printArraySearchHeader(const string& title) {
 
 // Record table row
 inline void printArraySearchRow(const Patient& p) {
-    cout << left << "| " << setw(4) << p.patientID
-         << " | " << setw(5) << p.age
+    cout << left << "| " << setw(5) << p.age
          << " | " << setw(15) << p.careType
          << " | " << setw(16) << p.lengthOfStay
          << " | " << setw(11) << p.baseCostPerHour
@@ -239,13 +237,23 @@ inline double averageArraySearchNanoseconds(const ArrayData& dataset, const Arra
     volatile int sink = 0;
     int ignored = 0;
     double best = -1;
+    int runs = repeats;
     for (int round = 0; round < ARRAY_SEARCH_ROUNDS; round++) {
-        chrono::steady_clock::time_point start = chrono::steady_clock::now();
-        for (int r = 0; r < repeats; r++) {
-            sink = runArraySearch(dataset, q, isSorted, ascending, ignored, false);
+        double elapsed = 0;
+        for (;;) {
+            chrono::steady_clock::time_point start = chrono::steady_clock::now();
+            for (int r = 0; r < runs; r++) {
+                sink = runArraySearch(dataset, q, isSorted, ascending, ignored, false);
+            }
+            chrono::steady_clock::time_point stop = chrono::steady_clock::now();
+            elapsed = (double)chrono::duration_cast<chrono::nanoseconds>(stop - start).count();
+            // A round must last at least 20 ms, otherwise a coarse clock reads 0: repeat more and measure again
+            if (elapsed >= 20000000.0 || runs >= 100000000) {
+                break;
+            }
+            runs *= 2;
         }
-        chrono::steady_clock::time_point stop = chrono::steady_clock::now();
-        double average = (double)chrono::duration_cast<chrono::nanoseconds>(stop - start).count() / repeats;
+        double average = elapsed / runs;
         if (best < 0 || average < best) {
             best = average;
         }
@@ -289,7 +297,7 @@ inline void displayArraySearchExperiment(const ArraySort& original, const string
          << " | " << setw(6) << "Found"
          << " | " << setw(11) << "Comparisons"
          << " | " << setw(13) << "Avg Time (ns)"
-         << " | " << setw(16) << "Extra Memory (B)" << " |\n";
+         << " | " << setw(16) << "Memory Usage (B)" << " |\n";
     cout << string(ruleWidth, '-') << "\n";
 
     bool sameResult = true;
@@ -305,7 +313,7 @@ inline void displayArraySearchExperiment(const ArraySort& original, const string
              << " | " << setw(6) << found
              << " | " << setw(11) << comparisons
              << " | " << setw(13) << numberText(nanoseconds, 0)
-             << " | " << setw(16) << searchBytes << " |\n";
+             << " | " << setw(16) << (original.dataBytes() + searchBytes) << " |\n";   // records + working memory
     }
     cout << string(ruleWidth, '-') << "\n";
     if (!sameResult) {
@@ -313,8 +321,8 @@ inline void displayArraySearchExperiment(const ArraySort& original, const string
     }
     cout << "Array memory: " << original.getCount() << " elements x " << sizeof(Patient) << " B = "
          << original.dataBytes() << " B" << endl;
-    cout << "Avg Time = mean of " << ARRAY_SEARCH_REPEATS << " runs, best of " << ARRAY_SEARCH_ROUNDS
-         << " rounds; sort time not included (see sorting experiments)" << endl;
+    cout << "Avg Time = mean of one search, best of " << ARRAY_SEARCH_ROUNDS
+         << " rounds, each repeated for 20+ ms; sort time not included" << endl;
     if (q.type == ARRAY_SEARCH_CARE_TYPE) {
         cout << "Care Type is not a sort field, so the Age-sorted array cannot stop early" << endl;
     }
