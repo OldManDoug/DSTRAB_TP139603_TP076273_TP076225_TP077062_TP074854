@@ -675,7 +675,9 @@ inline void displayListAgeGroupReport(const PatientList& dataset, const string& 
     cout << "Sorting: merge sort by age; insertion sort by care request count." << endl;
     cout << "Cost = Length of Stay x Base Cost Per Hour x Days Visits Per Year" << endl;
     for (int g = 0; g < 5; g++) {
-        cout << "\nAge Group: " << PatientList::ageGroupRange(g) << " (" << PatientList::ageGroupDescription(g) << ")" << endl;
+        string range = PatientList::ageGroupRange(g);
+        string description = PatientList::ageGroupDescription(g);
+        cout << "\nAge Group: " << range << " (" << description << ")" << endl;
         cout << string(ruleWidth, '-') << "\n";
         cout << left << "| " << setw(18) << "Care Type"
              << " | " << setw(15) << "Patient Count"
@@ -721,7 +723,8 @@ inline void displayListAgeGroupReport(const PatientList& dataset, const string& 
         if (stats[g].patientCount > 0) {
             average = stats[g].totalCost / stats[g].patientCount;
         }
-        cout << "| " << setw(10) << PatientList::ageGroupRange(g)
+        string range = PatientList::ageGroupRange(g);
+        cout << "| " << setw(10) << range
              << " | " << setw(10) << stats[g].patientCount
              << " | " << setw(16) << listNumberText(stats[g].totalCost, 2)
              << " | " << setw(20) << listNumberText(average, 2)
@@ -813,7 +816,8 @@ inline void displayListDatasetComparison(const PatientList& a, const PatientList
         cout << " |\n";
         cout << string(groupWidth, '-') << "\n";
         for (int g = 0; g < 5; g++) {
-            cout << "| " << setw(10) << PatientList::ageGroupRange(g);
+            string range = PatientList::ageGroupRange(g);
+            cout << "| " << setw(10) << range;
             for (int d = 0; d < 3; d++) {
                 string cell = "-";   // "-" means the dataset has no patients in this age group
                 if (stats[d][g].patientCount > 0) {
@@ -853,7 +857,8 @@ inline string highestListBillingGroups(const ListGroupStats groups[], double& hi
             if (result != "") {
                 result += " / ";
             }
-            result += PatientList::ageGroupRange(g);
+            string range = PatientList::ageGroupRange(g);
+            result += range;
         }
     }
     if (result == "") {
@@ -893,7 +898,8 @@ inline void displayListClinicalInsights(const PatientList& a, const PatientList&
     cout << " |\n";
     cout << string(averageWidth, '-') << "\n";
     for (int g = 0; g < 5; g++) {
-        cout << "| " << setw(10) << PatientList::ageGroupRange(g);
+        string range = PatientList::ageGroupRange(g);
+        cout << "| " << setw(10) << range;
         for (int d = 0; d < 3; d++) {
             string cell = "-";
             if (stats[d][g].patientCount > 0) {
@@ -916,7 +922,8 @@ inline void displayListClinicalInsights(const PatientList& a, const PatientList&
     cout << " |\n";
     cout << string(preferenceWidth, '-') << "\n";
     for (int g = 0; g < 5; g++) {
-        cout << "| " << setw(10) << PatientList::ageGroupRange(g);
+        string range = PatientList::ageGroupRange(g);
+        cout << "| " << setw(10) << range;
         for (int d = 0; d < 3; d++) {
             string cell = "-";
             if (stats[d][g].patientCount > 0) {

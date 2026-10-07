@@ -17,6 +17,7 @@ struct GroupStats {
     double totalCost;
     double totalStay;       // lengthOfStay = visit duration (hours)
     double totalVisits;
+
     GroupStats() {
         patientCount = 0;
         totalCost = 0;
@@ -34,13 +35,14 @@ const int SORT_BY_COST = 3;
 struct SortStats {
     long long comparisons;
     long long moves;
+
     SortStats() {
         comparisons = 0;
         moves = 0;
     }
 };
 
-// CareTally - two parallel arrays (care type names and counts) plus the cost per care type
+// care type names and counts and the cost per care type
 struct CareTally {
     string names[20];
     int counts[20];
@@ -55,34 +57,40 @@ struct CareTally {
         }
     }
 
-    // Add - count one patient (and its cost) under a care type
-    void add(const string& name, double cost) {   // O(c), c = number of care types
+    // count patient, cost under a care type
+    void add(const string& name, double cost) { 
         for (int i = 0; i < used; i++) {
+
             if (names[i] == name) {
                 counts[i]++;
                 costs[i] += cost;
                 return;
             }
         }
-        if (used == 20) {
+
+        if (used==20) {
             throw runtime_error("Too many different care types (limit is 20)");
         }
+
         names[used] = name;
         counts[used] = 1;
         costs[used] = cost;
         used++;
     }
 
-    // MostRequested - care type(s) with the highest count; ties are joined with " / "
-    string mostRequested() const {   // O(c)
+    // highest care type
+    string mostRequested() const {
         if (used == 0) {
             return "none";
         }
+
         int highest = counts[0];
+
         for (int i = 1; i < used; i++) {
             if (counts[i] > highest) {
                 highest = counts[i];
             }
+            
         }
         string result = "";
         for (int i = 0; i < used; i++) {
@@ -96,7 +104,7 @@ struct CareTally {
         return result;
     }
 
-    // PickNext - index of the biggest row not printed yet (by cost, or by count)
+    // find next care type to print
     int pickNext(const bool printed[], bool byCost) const {   // O(c)
         int best = -1;
         for (int i = 0; i < used; i++) {
@@ -105,17 +113,19 @@ struct CareTally {
             }
             if (best == -1) {
                 best = i;
-            } else if (byCost && costs[i] > costs[best]) {
+            } 
+            else if (byCost && costs[i] > costs[best]) {
                 best = i;
-            } else if (!byCost && counts[i] > counts[best]) {
+            } 
+            else if (!byCost && counts[i] > counts[best]) {
                 best = i;
             }
         }
         return best;
     }
 
-    // HighestCount - the biggest patient count of any care type (0 when the tally is empty)
-    int highestCount() const {   // O(c)
+    // biggest patient count of any care type (0 when the tally is empty)
+    int highestCount() const {
         int highest = 0;
         for (int i = 0; i < used; i++) {
             if (counts[i] > highest) {
@@ -126,11 +136,10 @@ struct CareTally {
     }
 };
 
-// Class definition - ArrayData plus age group analysis, expenditure analysis and sorting
 class ArraySort : public ArrayData {
 public:
-    // AgeGroupIndex - map an age to group 0-4, or -1 if the age is outside 0-100
-    static int ageGroupIndex(int age) {   // O(1)
+    // map an age to group
+    static int ageGroupIndex(int age) {
         if (age < 0 || age > 100) {
             return -1;
         }
@@ -149,7 +158,7 @@ public:
         return 4;
     }
 
-    // AgeGroupRange - the age range of a group, e.g. "18-25"
+    // age range of a group
     static string ageGroupRange(int group) {
         switch (group) {
             case 0: return "0-17";
@@ -160,7 +169,7 @@ public:
         }
     }
 
-    // AgeGroupDescription - the name of a group, e.g. "Young Adults / University Students"
+    // name of age group
     static string ageGroupDescription(int group) {
         switch (group) {
             case 0: return "Pediatrics & Adolescents";
@@ -171,8 +180,7 @@ public:
         }
     }
 
-    // AnalyseAgeGroups - one pass that fills stats[5] and tallies[5] (pass in fresh, empty arrays)
-    void analyseAgeGroups(GroupStats stats[], CareTally tallies[], int& outOfRange) const {   // O(n * c)
+    void analyseAgeGroups(GroupStats stats[], CareTally tallies[], int& outOfRange) const {
         outOfRange = 0;
         for (int i = 0; i < count; i++) {
             int group = ageGroupIndex(data[i].age);
@@ -188,48 +196,51 @@ public:
         }
     }
 
-    // TotalBilling - sum of totalCost over every record
-    double totalBilling() const {   // O(n)
+    // sum of totalCost over every record
+    double totalBilling() const {
         double sum = 0;
+
         for (int i = 0; i < count; i++) {
             sum += data[i].totalCost;
         }
         return sum;
     }
 
-    // AverageVisitDuration - mean visit duration (LengthOfStay) in hours (0 when there are no records)
-    double averageVisitDuration() const {   // O(n)
+    double averageVisitDuration() const {
         if (count == 0) {
             return 0;
         }
+
         double sum = 0;
         for (int i = 0; i < count; i++) {
+
             sum += data[i].lengthOfStay;
         }
         return sum / count;
     }
 
-    // AverageVisitsPerYear - mean DaysVisitsPerYear per patient (0 when there are no records)
-    double averageVisitsPerYear() const {   // O(n)
+    double averageVisitsPerYear() const {
         if (count == 0) {
             return 0;
         }
+
         double sum = 0;
         for (int i = 0; i < count; i++) {
+
             sum += data[i].daysVisitsPerYear;
         }
         return sum / count;
     }
 
-    // TallyCareTypes - add every record of this dataset to a care type tally (patients and cost per care type)
-    void tallyCareTypes(CareTally& tally) const {   // O(n * c)
+    // patients and cost per care type
+    void tallyCareTypes(CareTally& tally) const {
         for (int i = 0; i < count; i++) {
             tally.add(data[i].careType, data[i].totalCost);
         }
     }
 
-    // DisplayAgeGroupAnalysis - per age group: care type table, total cost, average cost, most requested care type
-    void displayAgeGroupAnalysis(const string& datasetName) const {   // O(n * c)
+    // care type table, total cost, average cost, most requested care type per age grp
+    void displayAgeGroupAnalysis(const string& datasetName) const {
         GroupStats stats[5];
         CareTally tallies[5];
         int outOfRange;
@@ -237,8 +248,11 @@ public:
 
         const int ruleWidth = 88;
         cout << "\n=== " << datasetName << " - Age Group and Billing Analysis ===" << endl;
+
         for (int g = 0; g < 5; g++) {
-            cout << "\nAge Group: " << ageGroupRange(g) << " (" << ageGroupDescription(g) << ")" << endl;
+            string range = ageGroupRange(g);
+            string description = ageGroupDescription(g);
+            cout << "\nAge Group: " << range << " (" << description << ")" << endl;
             cout << string(ruleWidth, '-') << "\n";
             cout << left << "| " << setw(18) << "Care Type"
                  << " | " << setw(15) << "Patient Count"
@@ -248,9 +262,11 @@ public:
 
             if (stats[g].patientCount == 0) {
                 cout << "| " << setw(ruleWidth - 4) << "No patients in this age group" << " |\n";
-            } else {
+            } 
+            else {
                 bool printed[20] = { false };
                 for (int row = 0; row < tallies[g].used; row++) {
+
                     int i = tallies[g].pickNext(printed, false);
                     printed[i] = true;
                     cout << "| " << setw(18) << tallies[g].names[i]
@@ -259,6 +275,7 @@ public:
                          << " | " << setw(26) << numberText(tallies[g].costs[i] / tallies[g].counts[i], 2) << " |\n";
                 }
             }
+
             cout << string(ruleWidth, '-') << "\n";
 
             double average = 0;
@@ -270,7 +287,7 @@ public:
             cout << "Most Requested Care Type: " << tallies[g].mostRequested() << endl;
         }
 
-        // Summary table, one row per age group
+        // summary table, one row per age group
         const int summaryWidth = 112;
         cout << "\nSummary - " << datasetName << endl;
         cout << string(summaryWidth, '-') << "\n";
@@ -280,29 +297,34 @@ public:
              << " | " << setw(20) << "Avg Cost per Patient"
              << " | " << setw(40) << "Most Requested Care Type" << " |\n";
         cout << string(summaryWidth, '-') << "\n";
+
         for (int g = 0; g < 5; g++) {
             double average = 0;
             if (stats[g].patientCount > 0) {
                 average = stats[g].totalCost / stats[g].patientCount;
             }
-            cout << "| " << setw(10) << ageGroupRange(g)
+            string range = ageGroupRange(g);
+            cout << "| " << setw(10) << range
                  << " | " << setw(10) << stats[g].patientCount
                  << " | " << setw(16) << numberText(stats[g].totalCost, 2)
                  << " | " << setw(20) << numberText(average, 2)
                  << " | " << setw(40) << tallies[g].mostRequested() << " |\n";
         }
         cout << string(summaryWidth, '-') << "\n";
+
         if (outOfRange > 0) {
             cout << "Note: " << outOfRange << " patient(s) with an age outside 0-100 are not in any group." << endl;
         }
     }
 
-    // DisplayExpenditure - total billing for the dataset and total cost grouped by care type
+    // total billing for the dataset and total cost grouped by care type
     void displayExpenditure(const string& datasetName) const {   // O(n * c)
         CareTally tally;
+
         for (int i = 0; i < count; i++) {
             tally.add(data[i].careType, data[i].totalCost);
         }
+
         double total = totalBilling();
 
         const int ruleWidth = 54;
@@ -315,6 +337,7 @@ public:
              << " | " << setw(16) << "Total Cost (RM)" << " |\n";
         cout << string(ruleWidth, '-') << "\n";
         bool printed[20] = { false };
+
         for (int row = 0; row < tally.used; row++) {
             int i = tally.pickNext(printed, true);
             printed[i] = true;
@@ -325,7 +348,6 @@ public:
         cout << string(ruleWidth, '-') << "\n";
     }
 
-    // SortFieldName - label of a sort field for the tables
     static string sortFieldName(int field) {
         if (field == SORT_BY_AGE) {
             return "Age";
@@ -336,12 +358,13 @@ public:
         return "Total Cost";
     }
 
-    // InsertionSort - sort this array in place (shifting version); stable
-    SortStats insertionSort(int field, bool ascending) {   // O(n^2) worst case, O(n) when already sorted
+    // Insertion Sort 
+    SortStats insertionSort(int field, bool ascending) {  
         SortStats stats;
         for (int i = 1; i < count; i++) {
             Patient key = data[i];
             int j = i - 1;
+            
             while (j >= 0) {
                 stats.comparisons++;
                 if (!isAfter(data[j], key, field, ascending)) {
@@ -356,9 +379,10 @@ public:
         return stats;
     }
 
-    // MergeSort - sort this array in place using one temporary buffer of n records; stable
-    SortStats mergeSort(int field, bool ascending) {   // O(n log n) time, O(n) extra space
+    // Merge Sort
+    SortStats mergeSort(int field, bool ascending) {
         SortStats stats;
+
         if (count < 2) {
             return stats;
         }
@@ -366,11 +390,11 @@ public:
         mergeSortRange(temp, 0, count - 1, field, ascending, stats);
         delete[] temp;
         temp = nullptr;
+
         return stats;
     }
 
-    // IsSorted - true when no record must come after the record next to it
-    bool isSorted(int field, bool ascending) const {   // O(n)
+    bool isSorted(int field, bool ascending) const {
         for (int i = 1; i < count; i++) {
             if (isAfter(data[i - 1], data[i], field, ascending)) {
                 return false;
@@ -379,12 +403,12 @@ public:
         return true;
     }
 
-    // DataBytes - memory used by the records themselves (sizeof(Patient) x n; text inside strings not counted)
+    // memory used by the records themselves
     size_t dataBytes() const {
         return sizeof(Patient) * count;
     }
 
-    // DisplayWithTotalCost - every record as the five CSV columns plus the total medical cost
+    // every record in CSV columns and the total medical cost
     void displayWithTotalCost() const {   // O(n)
         const int ruleWidth = 101;
         cout << left
@@ -395,6 +419,7 @@ public:
              << " | " << setw(12) << "Days Visit"
              << " | " << setw(23) << "Total Medical Cost (RM)" << " |\n";
         cout << string(ruleWidth, '-') << "\n";
+
         for (int i = 0; i < count; i++) {
             cout << "| " << setw(5)  << data[i].age
                  << " | " << setw(15) << data[i].careType
@@ -403,12 +428,13 @@ public:
                  << " | " << setw(12) << data[i].daysVisitsPerYear
                  << " | " << setw(23) << numberText(data[i].totalCost, 2) << " |\n";
         }
+
         cout << string(ruleWidth, '-') << "\n";
         cout << "Showing " << count << " of " << count << " records" << endl;
     }
 
 private:
-    // KeyOf - the value a record is sorted on
+    // sort criteria
     static double keyOf(const Patient& p, int field) {
         if (field == SORT_BY_AGE) {
             return p.age;
@@ -419,7 +445,6 @@ private:
         return p.totalCost;
     }
 
-    // IsAfter - true when 'left' must be placed after 'right' (equal keys keep their order, so sorts are stable)
     static bool isAfter(const Patient& left, const Patient& right, int field, bool ascending) {
         double a = keyOf(left, field);
         double b = keyOf(right, field);
@@ -429,22 +454,22 @@ private:
         return a < b;
     }
 
-    // MergeSortRange - sort data[left..right] by sorting both halves and then merging them
     void mergeSortRange(Patient* temp, int left, int right, int field, bool ascending, SortStats& stats) {
         if (left >= right) {
             return;
         }
+
         int mid = left + (right - left) / 2;
         mergeSortRange(temp, left, mid, field, ascending, stats);
         mergeSortRange(temp, mid + 1, right, field, ascending, stats);
         mergeRanges(temp, left, mid, right, field, ascending, stats);
     }
 
-    // MergeRanges - merge the sorted halves data[left..mid] and data[mid+1..right]
     void mergeRanges(Patient* temp, int left, int mid, int right, int field, bool ascending, SortStats& stats) {
         for (int k = left; k <= right; k++) {
             temp[k] = data[k];
         }
+
         int i = left;
         int j = mid + 1;
         int k = left;
@@ -457,10 +482,12 @@ private:
             }
             stats.moves++;
         }
+
         while (i <= mid) {
             data[k++] = temp[i++];
             stats.moves++;
         }
+
         while (j <= right) {
             data[k++] = temp[j++];
             stats.moves++;
@@ -468,12 +495,11 @@ private:
     }
 };
 
-// AverageSortNanoseconds - run one sort many times, each time on a fresh copy, and return the mean time
-inline double averageSortNanoseconds(const ArraySort& original, bool useMerge, int field, bool ascending,
-                                     int repeats, SortStats& statsOut) {
+// run one sort many times, each time on a fresh copy, and return the mean time
+inline double averageSortNanoseconds(const ArraySort& original, bool useMerge, int field, bool ascending,                                      int repeats, SortStats& statsOut) {
     long long totalNs = 0;
     int runs = 0;
-    // Keep measuring past 'repeats' until at least 20 ms were timed, so a coarse clock cannot read 0
+
     while (runs < repeats || (totalNs < 20000000 && runs < 100000)) {
         ArraySort copy(original);   // the original stays unsorted
         chrono::steady_clock::time_point start = chrono::steady_clock::now();
@@ -489,9 +515,7 @@ inline double averageSortNanoseconds(const ArraySort& original, bool useMerge, i
     return (double)totalNs / runs;
 }
 
-// DisplaySortExperiment - time both sorts on a copy of the dataset for fields firstField..lastField
-inline void displaySortExperiment(const ArraySort& original, const string& datasetName,
-                                  int firstField, int lastField, bool ascending) {
+inline void displaySortExperiment(const ArraySort& original, const string& datasetName, int firstField, int lastField, bool ascending) {
     const int repeats = 200;
     const int ruleWidth = 102;
     int n = original.getCount();
@@ -504,6 +528,7 @@ inline void displaySortExperiment(const ArraySort& original, const string& datas
          << " | " << setw(11) << "Comparisons"
          << " | " << setw(16) << "Memory Usage (B)" << " |\n";
     cout << string(ruleWidth, '-') << "\n";
+
     for (int field = firstField; field <= lastField; field++) {
         for (int algorithm = 0; algorithm < 2; algorithm++) {
             bool useMerge = (algorithm == 1);
@@ -529,13 +554,14 @@ inline void displaySortExperiment(const ArraySort& original, const string& datas
     }
 }
 
-// DisplayDatasetComparison - expenditure and visit duration across the three datasets and the age groups
+// expenditure and visit duration across the three datasets and the age groups
 inline void displayDatasetComparison(const ArraySort& a, const ArraySort& b, const ArraySort& c) {
     const ArraySort* sets[3] = { &a, &b, &c };
     const string labels[3] = { "Dataset A", "Dataset B", "Dataset C" };
     GroupStats stats[3][5];
     CareTally tallies[3][5];
     int outOfRange;
+
     for (int d = 0; d < 3; d++) {
         sets[d]->analyseAgeGroups(stats[d], tallies[d], outOfRange);
     }
@@ -550,6 +576,7 @@ inline void displayDatasetComparison(const ArraySort& a, const ArraySort& b, con
          << " | " << setw(24) << "Avg Visit Duration (hrs)"
          << " | " << setw(19) << "Avg Visits per Year" << " |\n";
     cout << string(overallWidth, '-') << "\n";
+
     for (int d = 0; d < 3; d++) {
         int patients = sets[d]->getCount();
         double total = sets[d]->totalBilling();
@@ -569,29 +596,37 @@ inline void displayDatasetComparison(const ArraySort& a, const ArraySort& b, con
     const int groupWidth = 71;
     for (int pass = 0; pass < 3; pass++) {
         string title = "Total Cost by Age Group (RM)";
+
         if (pass == 1) {
             title = "Average Visit Duration by Age Group (hours)";
-        } else if (pass == 2) {
+        } 
+        else if (pass == 2) {
             title = "Average Visits per Year by Age Group";
         }
+        
         cout << "\n" << title << endl;
         cout << string(groupWidth, '-') << "\n";
         cout << left << "| " << setw(10) << "Age Group";
+
         for (int d = 0; d < 3; d++) {
             cout << " | " << setw(16) << labels[d];
         }
         cout << " |\n";
         cout << string(groupWidth, '-') << "\n";
+
         for (int g = 0; g < 5; g++) {
-            cout << "| " << setw(10) << ArraySort::ageGroupRange(g);
+            string range = ArraySort::ageGroupRange(g);
+            cout << "| " << setw(10) << range;
             for (int d = 0; d < 3; d++) {
-                string cell = "-";   // "-" means the dataset has no patients in this age group
+                string cell = "-";   // no patients in this age group
                 if (stats[d][g].patientCount > 0) {
                     if (pass == 0) {
                         cell = numberText(stats[d][g].totalCost, 2);
-                    } else if (pass == 1) {
+                    } 
+                    else if (pass == 1) {
                         cell = numberText(stats[d][g].totalStay / stats[d][g].patientCount, 2);
-                    } else {
+                    } 
+                    else {
                         cell = numberText(stats[d][g].totalVisits / stats[d][g].patientCount, 2);
                     }
                 }
@@ -603,7 +638,6 @@ inline void displayDatasetComparison(const ArraySort& a, const ArraySort& b, con
     }
 }
 
-// HighestBillingGroups - the age group(s) with the highest total cost; groups without patients are ignored
 inline string highestBillingGroups(const GroupStats groups[], double& highestCost) {
     highestCost = -1;
     for (int g = 0; g < 5; g++) {
@@ -612,12 +646,14 @@ inline string highestBillingGroups(const GroupStats groups[], double& highestCos
         }
     }
     string result = "";
+    
     for (int g = 0; g < 5; g++) {
         if (groups[g].patientCount > 0 && groups[g].totalCost == highestCost) {
             if (result != "") {
                 result += " / ";
             }
-            result += ArraySort::ageGroupRange(g);
+            string range = ArraySort::ageGroupRange(g);
+            result += range;
         }
     }
     if (result == "") {
@@ -627,7 +663,7 @@ inline string highestBillingGroups(const GroupStats groups[], double& highestCos
     return result;
 }
 
-// DisplayClinicalInsights - compare treatment costs and service preferences across datasets and age groups,
+// compare treatment costs and service preferences across datasets and age groups,
 // then identify the highest-billing age group and the highest-traffic care type
 inline void displayClinicalInsights(const ArraySort& a, const ArraySort& b, const ArraySort& c) {
     const ArraySort* sets[3] = { &a, &b, &c };
@@ -637,6 +673,7 @@ inline void displayClinicalInsights(const ArraySort& a, const ArraySort& b, cons
     CareTally careTally[3];
     CareTally allCare;          // care types of all three datasets together
     int outOfRange;
+
     for (int d = 0; d < 3; d++) {
         sets[d]->analyseAgeGroups(stats[d], groupTallies[d], outOfRange);
         sets[d]->tallyCareTypes(careTally[d]);
@@ -645,7 +682,7 @@ inline void displayClinicalInsights(const ArraySort& a, const ArraySort& b, cons
 
     cout << "\n=== Clinical Insights ===" << endl;
 
-    // Table 1 - treatment cost: total cost of each age group in each dataset
+    // Table of total cost of each age group in each dataset
     const int averageWidth = 71;
     cout << "\nTotal Cost by Age Group (RM)" << endl;
     cout << string(averageWidth, '-') << "\n";
@@ -656,7 +693,8 @@ inline void displayClinicalInsights(const ArraySort& a, const ArraySort& b, cons
     cout << " |\n";
     cout << string(averageWidth, '-') << "\n";
     for (int g = 0; g < 5; g++) {
-        cout << "| " << setw(10) << ArraySort::ageGroupRange(g);
+        string range = ArraySort::ageGroupRange(g);
+        cout << "| " << setw(10) << range;
         for (int d = 0; d < 3; d++) {
             string cell = "-";
             if (stats[d][g].patientCount > 0) {
@@ -668,7 +706,7 @@ inline void displayClinicalInsights(const ArraySort& a, const ArraySort& b, cons
     }
     cout << string(averageWidth, '-') << "\n";
 
-    // Table 2 - service preference: most requested care type in each age group and dataset
+    // Table of most requested care type in each age group and dataset
     const int preferenceWidth = 89;
     cout << "\nPreferred (Most Requested) Care Type by Age Group" << endl;
     cout << string(preferenceWidth, '-') << "\n";
@@ -679,7 +717,8 @@ inline void displayClinicalInsights(const ArraySort& a, const ArraySort& b, cons
     cout << " |\n";
     cout << string(preferenceWidth, '-') << "\n";
     for (int g = 0; g < 5; g++) {
-        cout << "| " << setw(10) << ArraySort::ageGroupRange(g);
+        string range = ArraySort::ageGroupRange(g);
+        cout << "| " << setw(10) << range;
         for (int d = 0; d < 3; d++) {
             string cell = "-";
             if (stats[d][g].patientCount > 0) {
@@ -691,7 +730,7 @@ inline void displayClinicalInsights(const ArraySort& a, const ArraySort& b, cons
     }
     cout << string(preferenceWidth, '-') << "\n";
 
-    // Table 3 - findings: highest-billing age group and highest-traffic care type
+    // Table of highest-billing age group and highest-traffic care type
     GroupStats allGroups[5];    // age groups of all three datasets together
     for (int g = 0; g < 5; g++) {
         for (int d = 0; d < 3; d++) {
