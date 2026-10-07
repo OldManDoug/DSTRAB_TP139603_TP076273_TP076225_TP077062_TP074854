@@ -41,15 +41,23 @@ struct ListPatient {
 struct PatientNode {
     ListPatient data;
     PatientNode* next;
-    PatientNode() : next(nullptr) {}
-    PatientNode(const ListPatient& p) : data(p), next(nullptr) {}
+    PatientNode() {
+        next = nullptr;
+    }
+    PatientNode(const ListPatient& p) {
+        data = p;
+        next = nullptr;
+    }
 };
 
 // ListSortStats - what one sort run did
 struct ListSortStats {
     long long comparisons;
     int maxDepth;          // deepest recursion level reached (merge sort only)
-    ListSortStats() : comparisons(0), maxDepth(0) {}
+    ListSortStats() {
+        comparisons = 0;
+        maxDepth = 0;
+    }
 };
 
 // ListNumberText - format a number with a fixed number of decimals
@@ -65,7 +73,12 @@ struct ListGroupStats {
     double totalCost;
     double totalStay;       // sum of lengthOfStay = visit duration (hours)
     double totalVisits;     // sum of daysVisitsPerYear
-    ListGroupStats() : patientCount(0), totalCost(0), totalStay(0), totalVisits(0) {}
+    ListGroupStats() {
+        patientCount = 0;
+        totalCost = 0;
+        totalStay = 0;
+        totalVisits = 0;
+    }
 };
 
 
@@ -76,7 +89,8 @@ struct ListCareTally {
     double costs[20];
     int used;               // how many care types have been seen so far
 
-    ListCareTally() : used(0) {
+    ListCareTally() {
+        used = 0;
         for (int i = 0; i < 20; i++) {
             counts[i] = 0;
             costs[i] = 0;
@@ -305,10 +319,17 @@ private:
     }
 
 public:
-    PatientList() : head(nullptr), tail(nullptr), count(0) {}
+    PatientList() {
+        head = nullptr;
+        tail = nullptr;
+        count = 0;
+    }
 
     // Copy constructor - deep copy so a sort on the copy leaves the original alone
-    PatientList(const PatientList& other) : head(nullptr), tail(nullptr), count(0) {
+    PatientList(const PatientList& other) {
+        head = nullptr;
+        tail = nullptr;
+        count = 0;
         for (PatientNode* cur = other.head; cur != nullptr; cur = cur->next) {
             insertEnd(cur->data);
         }

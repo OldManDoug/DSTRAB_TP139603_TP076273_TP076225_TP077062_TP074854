@@ -9,32 +9,31 @@
 #include <stdexcept>
 using namespace std;
 
-// Patient record - one row of a facility CSV file
+// Patient record
 struct Patient {
-    int patientID;          // assigned in load order (CSV has no ID column)
+    int patientID;
     int age;
-    string careType;        // may contain spaces, e.g. "Routine Checkup"
+    string careType;
     int lengthOfStay;
     double baseCostPerHour;
     int daysVisitsPerYear;
     double totalCost;       // lengthOfStay * baseCostPerHour * daysVisitsPerYear
 };
 
-// Class definition - dynamic array of Patient that doubles when full
+
 class ArrayData {
 protected:
-    // Data members (protected, so ArraySort in arraySort.hpp can analyse and sort them)
     Patient* data;
     int count;
     int capacity;
 
 private:
-
-    // grow - double the capacity and copy the records across
-    void grow() {   // O(n), but happens rarely so insertEnd is O(1) amortised
+    // use to add records
+    void grow() {
         int newCapacity = capacity * 2;
         Patient* newData = new Patient[newCapacity];
         for (int i = 0; i < count; i++) {
+
             newData[i] = data[i];
         }
         delete[] data;
@@ -42,7 +41,7 @@ private:
         capacity = newCapacity;
     }
 
-    // trim - remove spaces, tabs and line endings (\r) from both ends
+    // remove spaces
     static string trim(const string& text) {
         const string whitespace = " \t\r\n";
         size_t first = text.find_first_not_of(whitespace);
@@ -53,7 +52,7 @@ private:
         return text.substr(first, last - first + 1);
     }
 
-    // parseInt - true only if the WHOLE text is one integer
+    // true only if contain integer
     static bool parseInt(const string& text, int& value) {
         istringstream ss(text);
         char extra;
@@ -63,7 +62,7 @@ private:
         return !(ss >> extra);
     }
 
-    // parseDouble - true only if the WHOLE text is one number
+    // true only if contain double
     static bool parseDouble(const string& text, double& value) {
         istringstream ss(text);
         char extra;
@@ -73,83 +72,96 @@ private:
         return !(ss >> extra);
     }
 
-    // parseRecord - handles invalid numbers and wrong field counts for each line
+    // handles error for each record line
     static bool parseRecord(const string& line, Patient& p, string& reason) {
         string fields[5];
         int fieldCount = 0;
         string field;
         stringstream ss(line);
+        
         while (getline(ss, field, ',')) {
             if (fieldCount < 5) {
                 fields[fieldCount] = trim(field);
             }
             fieldCount++;
         }
+
         if (fieldCount != 5) {
             ostringstream message;
             message << "expected 5 fields, found " << fieldCount;
             reason = message.str();
             return false;
         }
+
         if (!parseInt(fields[0], p.age) || p.age < 0) {
             reason = "invalid Age '" + fields[0] + "'";
             return false;
         }
+
         if (fields[1].empty()) {
             reason = "empty CareType";
             return false;
         }
+
         p.careType = fields[1];
         if (!parseInt(fields[2], p.lengthOfStay) || p.lengthOfStay < 0) {
             reason = "invalid LengthOfStay '" + fields[2] + "'";
             return false;
         }
+
         if (!parseDouble(fields[3], p.baseCostPerHour) || p.baseCostPerHour < 0) {
             reason = "invalid BaseCostPerHour '" + fields[3] + "'";
             return false;
         }
+
         if (!parseInt(fields[4], p.daysVisitsPerYear) || p.daysVisitsPerYear < 0) {
             reason = "invalid DaysVisitsPerYear '" + fields[4] + "'";
             return false;
         }
+
         return true;
     }
 
 public:
-    // Constructor - start with 16 records then double using grow()
-    ArrayData() : data(new Patient[16]), count(0), capacity(16) {}
+    ArrayData() {
+        data = new Patient[16];
+        count = 0;
+        capacity = 16;
+    }
 
-    // Copy constructor - deep copy so a sort on the copy leaves the original alone
-    ArrayData(const ArrayData& other)
-        : data(new Patient[other.capacity]), count(other.count), capacity(other.capacity) {
+    ArrayData(const ArrayData& other) {
+        data = new Patient[other.capacity];
+        count = other.count;
+        capacity = other.capacity;
         for (int i = 0; i < count; i++) {
             data[i] = other.data[i];
         }
     }
 
-    // Assignment - deep copy (safe against self-assignment)
     ArrayData& operator=(const ArrayData& other) {
         if (this != &other) {
             Patient* newData = new Patient[other.capacity];
+
             for (int i = 0; i < other.count; i++) {
                 newData[i] = other.data[i];
             }
+
             delete[] data;
             data = newData;
             count = other.count;
             capacity = other.capacity;
         }
+
         return *this;
     }
 
-    // Destructor - clean memory
     ~ArrayData() {
         delete[] data;
         data = nullptr;
     }
 
-    // InsertEnd - add a record at the END
-    void insertEnd(const Patient& p) {   // O(1) amortised
+    // add a record at the END
+    void insertEnd(const Patient& p) {   
         if (count == capacity) {
             grow();
         }
@@ -157,19 +169,20 @@ public:
         count++;
     }
 
-    // CalculateTotalCosts - fill totalCost for every record
-    void calculateTotalCosts() {   // O(n)
+    // calculate total cost for every record
+    void calculateTotalCosts() {
         for (int i = 0; i < count; i++) {
-            data[i].totalCost = data[i].lengthOfStay * data[i].baseCostPerHour * data[i].daysVisitsPerYear;
+            data[i].totalCost = data[i].lengthOfStay*data[i].baseCostPerHour*data[i].daysVisitsPerYear;
         }
     }
 
-    // LoadFromFile - read a CSV file (header optional); returns false if it cannot be opened
-    bool loadFromFile(const string& filename) {   // O(n)
+    // read a CSV file
+    bool loadFromFile(const string& filename) {
         clear();
         ifstream file(filename.c_str());
+
         if (!file.is_open()) {
-            cerr << "Error: Cannot open file " << filename << endl;
+            cerr << "Error: Cannot open file " << filename <<endl;
             return false;
         }
 
@@ -177,19 +190,15 @@ public:
         int lineNumber = 0;
         int skipped = 0;
         bool firstRecordLine = true;
+
         while (getline(file, line)) {
             lineNumber++;
-            // Remove the UTF-8 BOM some editors put at the start of a file
-            if (lineNumber == 1 && line.size() >= 3 &&
-                (unsigned char)line[0] == 0xEF && (unsigned char)line[1] == 0xBB && (unsigned char)line[2] == 0xBF) {
-                line.erase(0, 3);
-            }
             line = trim(line);
             if (line.empty()) {
                 continue;
             }
 
-            // If the first field of the first line is not a number it is a header row
+            // ignore header row
             if (firstRecordLine) {
                 firstRecordLine = false;
                 int firstValue;
@@ -200,6 +209,7 @@ public:
 
             Patient p;
             string reason;
+
             if (!parseRecord(line, p, reason)) {
                 cerr << "Warning: line " << lineNumber << " skipped (" << reason << ")" << endl;
                 skipped++;
@@ -215,13 +225,12 @@ public:
         return true;
     }
 
-    // GetCount - number of records stored
+    // number of records stored
     int getCount() const {
         return count;
     }
 
-    // GetAt - read-only access to one record by index
-    const Patient& getAt(int index) const {   // O(1)
+    const Patient& getAt(int index) const {
         if (index < 0 || index >= count) {
             ostringstream message;
             message << "Index out of range: getAt(" << index << ") with count " << count;
@@ -230,12 +239,11 @@ public:
         return data[index];
     }
 
-    // Clear - forget all records (the memory is kept for reuse)
-    void clear() {   // O(1)
+    void clear() {  
         count = 0;
     }
 
-    // Display - print records as a table; limit < 0 means print all
+    // print records as a table
     void display(int limit = -1) const {
         if (count == 0) {
             cout << "(no records)" << endl;
@@ -243,7 +251,6 @@ public:
         }
         int shown = (limit < 0 || limit > count) ? count : limit;
 
-        // Same column layout as the linked-list tables
         cout << left
              << "| " << setw(5)  << "Age"
              << " | " << setw(15) << "Care Type"
@@ -259,12 +266,12 @@ public:
                  << " | " << setw(12) << data[i].daysVisitsPerYear << " |\n";
         }
         cout << string(75, '-') << "\n";
-        cout << "Showing " << shown << " of " << count << " records" << endl;
+        cout << "Showing " << shown << " of " << count << " records" <<endl;
     }
 };
 
 // TylerMSFT. (2024, January 22). Inline Functions (C++). Learn.Microsoft.Com. https://learn.microsoft.com/en-us/cpp/cpp/inline-functions-cpp?view=msvc-170
-// LoadIfEmpty - load a dataset quietly (no table) when it has no records yet; false if the file cannot be read
+// load a dataset
 inline bool loadIfEmpty(ArrayData& dataset, const string& filename) {
     if (dataset.getCount() > 0) {
         return true;
@@ -272,19 +279,20 @@ inline bool loadIfEmpty(ArrayData& dataset, const string& filename) {
     return dataset.loadFromFile(filename);
 }
 
-// ShowDataset - load one CSV if needed, then print its table
+// load one CSV print its table
 inline void showDataset(ArrayData& dataset, const string& title, const string& filename) {
     cout << "\n" << title << endl;
     if (loadIfEmpty(dataset, filename)) {
-        dataset.display();
+        dataset.display(); 
     }
 }
 
-// EnsureAllLoaded - make sure all three datasets are in memory, so any menu option can be chosen first
+// make sure all three datasets are in memory
 inline bool ensureAllLoaded(ArrayData& datasetA, ArrayData& datasetB, ArrayData& datasetC) {
     bool loadedA = loadIfEmpty(datasetA, "dataset1facility_a.csv");
     bool loadedB = loadIfEmpty(datasetB, "dataset2facility_b.csv");
     bool loadedC = loadIfEmpty(datasetC, "dataset3facility_c.csv");
+
     return loadedA && loadedB && loadedC;
 }
 

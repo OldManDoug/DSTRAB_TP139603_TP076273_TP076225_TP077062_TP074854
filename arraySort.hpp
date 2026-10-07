@@ -4,32 +4,40 @@
 #include <chrono>
 #include "arrayDataSet.hpp"
 
-// NumberText - format a number with a fixed number of decimals
+// fixed number of decimals
 inline string numberText(double value, int decimals) {
     ostringstream out;
     out << fixed << setprecision(decimals) << value;
     return out.str();
 }
 
-// GroupStats - totals for one age group
+// totals for one age group
 struct GroupStats {
     int patientCount;
     double totalCost;
-    double totalStay;       // sum of lengthOfStay = visit duration (hours)
-    double totalVisits;     // sum of daysVisitsPerYear
-    GroupStats() : patientCount(0), totalCost(0), totalStay(0), totalVisits(0) {}
+    double totalStay;       // lengthOfStay = visit duration (hours)
+    double totalVisits;
+    GroupStats() {
+        patientCount = 0;
+        totalCost = 0;
+        totalStay = 0;
+        totalVisits = 0;
+    }
 };
 
-// Fields a dataset can be sorted by
+// sort criteria
 const int SORT_BY_AGE = 1;
-const int SORT_BY_DURATION = 2;     // visit duration = LengthOfStay (hours)
-const int SORT_BY_COST = 3;         // total medical cost
+const int SORT_BY_DURATION = 2;
+const int SORT_BY_COST = 3;
 
-// SortStats - what one sort run did (moves = shifts for insertion sort, writes for merge sort)
+// use to record comparison steps
 struct SortStats {
     long long comparisons;
     long long moves;
-    SortStats() : comparisons(0), moves(0) {}
+    SortStats() {
+        comparisons = 0;
+        moves = 0;
+    }
 };
 
 // CareTally - two parallel arrays (care type names and counts) plus the cost per care type
@@ -39,7 +47,8 @@ struct CareTally {
     double costs[20];
     int used;               // how many care types have been seen so far
 
-    CareTally() : used(0) {
+    CareTally() {
+        used = 0;
         for (int i = 0; i < 20; i++) {
             counts[i] = 0;
             costs[i] = 0;

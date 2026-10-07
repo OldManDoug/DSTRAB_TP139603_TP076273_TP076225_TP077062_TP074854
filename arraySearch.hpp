@@ -35,7 +35,12 @@ struct ArraySearchQuery {
     int maxAge;
     string careType;
     int hours;
-    ArraySearchQuery() : type(ARRAY_SEARCH_AGE_GROUP), minAge(0), maxAge(0), hours(0) {}
+    ArraySearchQuery() {
+        type = ARRAY_SEARCH_AGE_GROUP;
+        minAge = 0;
+        maxAge = 0;
+        hours = 0;
+    }
 };
 
 // Benchmark experiment settings
