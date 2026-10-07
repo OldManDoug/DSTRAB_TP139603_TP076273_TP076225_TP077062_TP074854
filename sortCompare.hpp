@@ -1,13 +1,9 @@
 #ifndef SORT_COMPARE_HPP
 #define SORT_COMPARE_HPP
 
-// Compares the array sorts (arraySort.hpp) with the singly linked list sorts (lists.hpp).
-// Include this file AFTER arraySort.hpp and lists.hpp (lists.hpp has no include guard, so it is not included here).
-
-// DisplaySortComparison - run insertion sort and merge sort on the array and on the singly linked list
+// run insertion sort and merge sort on the array and on the singly linked list
 // for one dataset, and print them side by side (time complexity, time, comparisons and memory)
-inline void displaySortComparison(const ArraySort& arrayData, const PatientList& listData,
-                                  const string& datasetName, int field, bool ascending) {
+inline void displaySortComparison(const ArraySort& arrayData, const PatientList& listData,                                   const string& datasetName, int field, bool ascending) {
     const int repeats = 200;
     const int ruleWidth = 102;
     int n = arrayData.getCount();
