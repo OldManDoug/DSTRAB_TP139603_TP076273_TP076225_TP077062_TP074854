@@ -6,27 +6,21 @@
 #include <iomanip>
 #include <cstdio>
 
-using namespace std; // no need put std in front of everything
+using namespace std;  // Saves repeating std:: throughout this file.
 
-// =====================================================================
-// SORTING PART (linked list) - PatientList: insertion sort + merge sort
-// Same fields / table layout as array.hpp so the two can be compared fairly.
-// =====================================================================
-// Sorting records stay in linked-list nodes; summaries use fixed-size arrays.
-// Singly linked list of Patient nodes + insertion sort + merge sort, using the same
-// sort fields / table layout as array.hpp so the two structures can be compared fairly.
-// Names are prefixed (List...) so this header can be included together with array.hpp.
-
+// Patient records are stored in a singly linked list and sorted with insertion or merge sort.
+// The fields and table layout match the array version for comparison.
+// Summaries use fixed-size arrays. The List prefix avoids name clashes with the array code.
 
 #include <stdexcept>
 
-// Fields a list can be sorted by (same numbers as the menu: 1 / 2 / 3)
+// Fields 1-3 match the sorting menu; care type is used for billing reports.
 const int LIST_SORT_BY_AGE = 1;
 const int LIST_SORT_BY_DURATION = 2;   // visit duration = LengthOfStay (hours)
 const int LIST_SORT_BY_CARE = 4;
 const int LIST_SORT_BY_COST = 3;       // total medical cost
 
-// ListPatient - one row of a facility CSV file
+// One row of a facility CSV file.
 struct ListPatient {
     int patientID;
     int age;
@@ -37,7 +31,7 @@ struct ListPatient {
     double totalCost;      // lengthOfStay * baseCostPerHour * daysVisitsPerYear
 };
 
-// PatientNode - one node: the record + pointer to the next node
+// One node: the record + pointer to the next node.
 struct PatientNode {
     ListPatient data;
     PatientNode* next;
@@ -50,7 +44,7 @@ struct PatientNode {
     }
 };
 
-// ListSortStats - what one sort run did
+// Measurements from one sorting run.
 struct ListSortStats {
     long long comparisons;
     int maxDepth;          // deepest recursion level reached (merge sort only)
@@ -60,14 +54,14 @@ struct ListSortStats {
     }
 };
 
-// ListNumberText - format a number with a fixed number of decimals
+// Format a number with a fixed number of decimals.
 inline string listNumberText(double value, int decimals) {
     ostringstream out;
     out << fixed << setprecision(decimals) << value;
     return out.str();
 }
 
-// ListGroupStats - totals for one age group
+// Totals for one age group.
 struct ListGroupStats {
     int patientCount;
     double totalCost;
@@ -81,8 +75,7 @@ struct ListGroupStats {
     }
 };
 
-
-// ListCareTally - two parallel arrays (care type names and counts) plus the cost per care type
+// Store each care type with its patient count and total cost.
 struct ListCareTally {
     string names[20];
     int counts[20];
@@ -97,8 +90,7 @@ struct ListCareTally {
         }
     }
 
-    // Add - accumulate each care-type run in O(1); find existing rows when combining datasets.
-    // Counts represent patient records (one care request per record).
+    // Counts represent patient records 
     void add(const string& name, double cost) {   // O(c), c = number of care types
         if (used > 0 && names[used - 1] == name) {
             counts[used - 1]++;
@@ -121,7 +113,7 @@ struct ListCareTally {
         used++;
     }
 
-    // Insertion sort of aggregate rows; names, counts and costs move together.
+    // Rank the totals with insertion sort
     ListCareTally ranked(bool byCost) const {
         ListCareTally sorted(*this);
         for (int i = 1; i < sorted.used; i++) {
@@ -142,7 +134,7 @@ struct ListCareTally {
         return sorted;
     }
 
-    // MostRequested - care type(s) with the highest count; ties are joined with " / "
+    // Return the most requested care types
     string mostRequested() const {   // O(c^2): insertion sort of the care totals
         if (used == 0) {
             return "none";
@@ -157,7 +149,7 @@ struct ListCareTally {
         return result;
     }
 
-    // HighestCount - the biggest patient count of any care type (0 when the tally is empty)
+    // Return the highest care count, or 0 for an empty tally.
     int highestCount() const {
         return used == 0 ? 0 : ranked(false).counts[0];
     }
@@ -174,7 +166,7 @@ private:
     PatientNode* tail;     // kept so appending is O(1) instead of walking the whole list
     int count;
 
-    // ---- CSV helpers (same rules as the array loader) ----
+    // Read and validate CSV fields using the same rules as the array loader.
     static string trim(const string& text) {
         const string whitespace = " \t\r\n";
         size_t first = text.find_first_not_of(whitespace);
@@ -244,8 +236,8 @@ private:
         return true;
     }
 
-    // ---- sorting helpers ----
-    // KeyOf - the value a record is sorted on
+    // Sorting helpers.
+    // The value a record is sorted on.
     static double keyOf(const ListPatient& p, int field) {
         if (field == LIST_SORT_BY_AGE) {
             return p.age;
@@ -256,7 +248,7 @@ private:
         return p.totalCost;
     }
 
-    // IsAfter - true when 'left' must be placed after 'right' (equal keys are NOT "after", so sorts are stable)
+    // Compare the selected field. Equal values keep their original order.
     static bool isAfter(const ListPatient& left, const ListPatient& right, int field, bool ascending) {
         if (field == LIST_SORT_BY_CARE) {
             return ascending ? left.careType > right.careType : left.careType < right.careType;
@@ -269,7 +261,7 @@ private:
         return a < b;
     }
 
-    // FixTail - walk to the last node (needed after a sort re-links the nodes)
+    // Update the tail after sorting changes the node links.
     void fixTail() {
         tail = head;
         while (tail != nullptr && tail->next != nullptr) {
@@ -277,7 +269,7 @@ private:
         }
     }
 
-    // MergeTwo - merge two sorted chains into one by re-linking nodes (no new nodes, no copying)
+    // Merge two sorted chains by changing their links; reuse the existing nodes.
     static PatientNode* mergeTwo(PatientNode* a, PatientNode* b, int field, bool ascending, ListSortStats& stats) {
         PatientNode* result = nullptr;
         PatientNode** link = &result;      // address of the pointer we must fill next
@@ -287,7 +279,7 @@ private:
                 *link = b;
                 b = b->next;
             } else {
-                *link = a;                 // left one wins ties, which keeps the sort stable
+                *link = a;  // Take the left node on ties to keep the sort stable.
                 a = a->next;
             }
             link = &((*link)->next);
@@ -296,7 +288,7 @@ private:
         return result;
     }
 
-    // MergeSortNodes - split the chain in half (slow/fast pointers), sort both halves, merge them
+    // Find the middle with slow and fast pointers, then sort and merge both halves.
     static PatientNode* mergeSortNodes(PatientNode* first, int field, bool ascending, ListSortStats& stats, int depth) {
         if (depth > stats.maxDepth) {
             stats.maxDepth = depth;
@@ -325,7 +317,7 @@ public:
         count = 0;
     }
 
-    // Copy constructor - deep copy so a sort on the copy leaves the original alone
+    // Copy every node so sorting the copy preserves the original list.
     PatientList(const PatientList& other) {
         head = nullptr;
         tail = nullptr;
@@ -349,7 +341,7 @@ public:
         clear();
     }
 
-    // InsertEnd - add a record at the END using the tail pointer
+    // Append a record using the tail pointer.
     void insertEnd(const ListPatient& p) {   // O(1)
         PatientNode* node = new PatientNode(p);
         if (head == nullptr) {
@@ -362,7 +354,7 @@ public:
         count++;
     }
 
-    // Clear - delete every node
+    // Delete every node.
     void clear() {   // O(n)
         PatientNode* cur = head;
         while (cur != nullptr) {
@@ -383,7 +375,7 @@ public:
         return head;
     }
 
-    // AgeGroupIndex - map an age to group 0-4, or -1 if the age is outside 0-100
+    // Assign ages 0-100 to groups 0-4; return -1 for ages outside that range.
     static int ageGroupIndex(int age) {   // O(1)
         if (age < 0 || age > 100) {
             return -1;
@@ -403,7 +395,7 @@ public:
         return 4;
     }
 
-    // AgeGroupRange - the age range of a group, e.g. "18-25"
+    // Age range shown in the report, e.g. "18-25".
     static string ageGroupRange(int group) {
         switch (group) {
             case 0: return "0-17";
@@ -414,7 +406,7 @@ public:
         }
     }
 
-    // AgeGroupDescription - the name of a group, e.g. "Young Adults / University Students"
+    // Group label shown in the report, like "Young Adults or University Students"
     static string ageGroupDescription(int group) {
         switch (group) {
             case 0: return "Pediatrics & Adolescents";
@@ -425,7 +417,7 @@ public:
         }
     }
 
-    // Merge sort a deep copy by age; age groups are contiguous in the sorted chain.
+    // This function sort a copy by age 
     void analyseAgeGroups(ListGroupStats stats[], ListCareTally tallies[], int& outOfRange) const {
         PatientList sorted(*this);
         sorted.calculateTotalCosts();
@@ -443,7 +435,7 @@ public:
         }
     }
 
-    // Total and averages consume nodes after merge sorting a copy.
+    // Calculate totals and averages from a sorted copy.
     double totalBilling() const {
         PatientList sorted(*this);
         sorted.calculateTotalCosts();
@@ -490,14 +482,14 @@ public:
         displayListExpenditureReport(*this, datasetName);
     }
 
-    // CalculateTotalCosts - fill totalCost for every record
+    // Fill totalCost for every record.
     void calculateTotalCosts() {   // O(n)
         for (PatientNode* cur = head; cur != nullptr; cur = cur->next) {
             cur->data.totalCost = cur->data.lengthOfStay * cur->data.baseCostPerHour * cur->data.daysVisitsPerYear;
         }
     }
 
-    // LoadFromFile 
+    // Load patient records from a CSV file.
     bool loadFromFile(const string& filename) {   // O(n)
         clear();
         ifstream file(filename.c_str());
@@ -540,7 +532,7 @@ public:
         return true;
     }
 
-    // Display same table as the array version
+    // Print patient records in the same table layout as the array version.
     void display(int limit = -1) const {
         if (count == 0) {
             cout << "(no records)" << endl;
@@ -567,7 +559,7 @@ public:
         cout << "Showing " << shown << " of " << count << " records" << endl;
     }
 
-    // DisplayWithTotalCost
+    // Print patient records with their total medical costs.
     void displayWithTotalCost() const {   // O(n)
         const int ruleWidth = 101;
         cout << left
@@ -600,20 +592,20 @@ public:
         return "Total Cost";
     }
 
-    // InsertionSort
+    // Insert each node into its position in a sorted chain.
     ListSortStats insertionSort(int field, bool ascending) {
         ListSortStats stats;
         PatientNode* sorted = nullptr;
         PatientNode* cur = head;
         while (cur != nullptr) {
-            PatientNode* nextNode = cur->next;     // remember, because cur->next is about to change
+            PatientNode* nextNode = cur->next;  // Save the next node before changing this link.
             if (sorted == nullptr) {
                 cur->next = nullptr;
                 sorted = cur;
             } else {
                 stats.comparisons++;
                 if (isAfter(sorted->data, cur->data, field, ascending)) {
-                    cur->next = sorted;            // goes in front of everything
+                    cur->next = sorted;  // Insert at the front.
                     sorted = cur;
                 } else {
                     PatientNode* walker = sorted;
@@ -624,7 +616,7 @@ public:
                         }
                         walker = walker->next;
                     }
-                    cur->next = walker->next;      // splice cur in after walker
+                    cur->next = walker->next;  // Insert after walker.
                     walker->next = cur;
                 }
             }
@@ -635,7 +627,7 @@ public:
         return stats;
     }
 
-    // MergeSort - merge by re-linking nodes
+    // Merge sort the list by changing node links.
     ListSortStats mergeSort(int field, bool ascending) {
         ListSortStats stats;
         head = mergeSortNodes(head, field, ascending, stats, 1);
@@ -643,7 +635,7 @@ public:
         return stats;
     }
 
-    // IsSorted - true when no record must come after the record next to it
+    // Check that adjacent records follow the requested order.
     bool isSorted(int field, bool ascending) const {   // O(n)
         for (PatientNode* cur = head; cur != nullptr && cur->next != nullptr; cur = cur->next) {
             if (isAfter(cur->data, cur->next->data, field, ascending)) {
@@ -653,13 +645,13 @@ public:
         return true;
     }
 
-    // NodeBytes - memory of the whole list 
+    // Memory used by the nodes, include their next pointers.
     size_t nodeBytes() const {
         return sizeof(PatientNode) * count;
     }
 };
 
-// Section 4(a-c): sorted age groups, care preference, total and average billing.
+// Section 4: show care preferences and total and average costs for each age group.
 inline void displayListAgeGroupReport(const PatientList& dataset, const string& datasetName) {
     ListGroupStats stats[5];
     ListCareTally tallies[5];
@@ -697,7 +689,7 @@ inline void displayListAgeGroupReport(const PatientList& dataset, const string& 
 
         double average = 0;
         if (stats[g].patientCount > 0) {
-            average = stats[g].totalCost / stats[g].patientCount;   // guarded: never divides by 0
+            average = stats[g].totalCost / stats[g].patientCount;  // Only divide when this group has patients.
         }
         cout << "Total Billing for Age Group: RM " << listNumberText(stats[g].totalCost, 2) << endl;
         cout << "Average Cost per Patient: RM " << listNumberText(average, 2) << endl;
@@ -732,7 +724,7 @@ inline void displayListAgeGroupReport(const PatientList& dataset, const string& 
     }
 }
 
-// Section 5(a,b,d): sorted billing totals and console table by care type.
+// Section 5(a,b,d): show dataset billing and care-type totals in a console table.
 inline void displayListExpenditureReport(const PatientList& dataset, const string& datasetName) {
     ListCareTally tally;
     dataset.tallyCareTypes(tally);
@@ -758,7 +750,7 @@ inline void displayListExpenditureReport(const PatientList& dataset, const strin
     cout << string(ruleWidth, '-') << "\n";
 }
 
-// Section 5(c,d): compare expenditure and visit durations in console tables.
+// Section 5(c,d): compare costs and visit durations across datasets and age groups.
 inline void displayListDatasetComparison(const PatientList& a, const PatientList& b, const PatientList& c) {
     const PatientList* sets[3] = { &a, &b, &c };
     const string labels[3] = { "Dataset A", "Dataset B", "Dataset C" };
@@ -815,7 +807,7 @@ inline void displayListDatasetComparison(const PatientList& a, const PatientList
             string range = PatientList::ageGroupRange(g);
             cout << "| " << setw(10) << range;
             for (int d = 0; d < 3; d++) {
-                string cell = "-";   
+                string cell = "-";
                 if (stats[d][g].patientCount > 0) {
                     if (pass == 0) {
                         cell = listNumberText(stats[d][g].totalCost, 2);
@@ -833,11 +825,11 @@ inline void displayListDatasetComparison(const PatientList& a, const PatientList
     }
 }
 
-// HighestBillingGroups - the age group with the highest total cost 
+// Find the age groups with the highest total cost, including ties.
 // groups without patients are ignored
 inline string highestListBillingGroups(const ListGroupStats groups[], double& highestCost) {
     int order[5] = {0, 1, 2, 3, 4};
-    // Insertion sort of group totals descending; empty groups rank last.
+    // Sort group totals from highest to lowest, placing empty groups last.
     for (int i = 1; i < 5; i++) {
         int key = order[i], j = i - 1;
         double value = groups[key].patientCount ? groups[key].totalCost : -1;
@@ -865,8 +857,8 @@ inline string highestListBillingGroups(const ListGroupStats groups[], double& hi
     return result;
 }
 
-// DisplayClinicalInsights - compare treatment costs and service preferences across datasets and age groups
-// then identify the highest-billing age group and the highest-traffic care type
+// Compare costs and care preferences across datasets and age groups.
+// this function also find the age groups with the highest billing and care types with the most patients.
 inline void displayListClinicalInsights(const PatientList& a, const PatientList& b, const PatientList& c) {
     const PatientList* sets[3] = { &a, &b, &c };
     const string labels[3] = { "Dataset A", "Dataset B", "Dataset C" };
@@ -884,7 +876,7 @@ inline void displayListClinicalInsights(const PatientList& a, const PatientList&
     cout << "\n=== Clinical Insights ===" << endl;
     cout << "Sorting: merge sort by age/care type; insertion sort by group billing and care traffic." << endl;
 
-    // Table 1 - treatment cost: total cost of each age group in each dataset
+    // Total cost for each age group in each dataset.
     const int averageWidth = 71;
     cout << "\nTotal Cost by Age Group (RM)" << endl;
     cout << string(averageWidth, '-') << "\n";
@@ -908,7 +900,7 @@ inline void displayListClinicalInsights(const PatientList& a, const PatientList&
     }
     cout << string(averageWidth, '-') << "\n";
 
-    // Table 2 - service preference: most requested care type in each age group and dataset
+    // Most requested care types for each age group and dataset.
     const int preferenceWidth = 89;
     cout << "\nPreferred (Most Requested) Care Type by Age Group" << endl;
     cout << string(preferenceWidth, '-') << "\n";
@@ -932,8 +924,8 @@ inline void displayListClinicalInsights(const PatientList& a, const PatientList&
     }
     cout << string(preferenceWidth, '-') << "\n";
 
-    // Table 3 - findings: highest-billing age group and highest-traffic care type
-    ListGroupStats allGroups[5];    
+    // Age groups with the highest billing and care types with the most patients.
+    ListGroupStats allGroups[5];
     for (int g = 0; g < 5; g++) {
         for (int d = 0; d < 3; d++) {
             allGroups[g].patientCount += stats[d][g].patientCount;
@@ -963,14 +955,14 @@ inline void displayListClinicalInsights(const PatientList& a, const PatientList&
     cout << string(findingWidth, '-') << "\n";
 }
 
-// AverageListSortNanoseconds - run one sort many times, each on a fresh copy
+// Measure repeated sorting runs, starting with a fresh copy each time.
 inline double averageListSortNanoseconds(const PatientList& original, bool useMerge, int field, bool ascending,
                                          int repeats, ListSortStats& statsOut) {
     long long totalNs = 0;
     int runs = 0;
-    // Keep measuring past 'repeats' until at least 20 ms were timed, so a coarse clock cannot read 0
+    // Measure at least 20 ms of sorting time to avoid zero readings from a coarse clock.
     while (runs < repeats || (totalNs < 20000000 && runs < 100000)) {
-        PatientList copy(original);     // copying is NOT timed
+        PatientList copy(original);  // Create the copy before starting the timer.
         chrono::steady_clock::time_point start = chrono::steady_clock::now();
         if (useMerge) {
             statsOut = copy.mergeSort(field, ascending);
@@ -984,7 +976,7 @@ inline double averageListSortNanoseconds(const PatientList& original, bool useMe
     return (double)totalNs / runs;
 }
 
-// DisplayListSortExperiment 
+// Compare both sorting algorithms, then print the sorted records.
 inline void displayListSortExperiment(const PatientList& original, const string& datasetName,
                                       int firstField, int lastField, bool ascending) {
     const int repeats = 200;
@@ -1005,8 +997,8 @@ inline void displayListSortExperiment(const PatientList& original, const string&
             ListSortStats stats;
             double nanoseconds = averageListSortNanoseconds(original, useMerge, field, ascending, repeats, stats);
 
-            // Extra memory beyond the list itself: insertion = a few pointers;
-            // merge = about 6 pointer-sized values per recursion level (eta)
+            // Extra memory estimate: insertion sort uses a few pointers.
+            // Merge sort uses about six pointer-sized values per recursion level.
             size_t extraBytes = useMerge ? (size_t)stats.maxDepth * 6 * sizeof(void*) : 3 * sizeof(void*);
             cout << "| " << setw(14) << PatientList::sortFieldName(field)
                  << " | " << setw(14) << (useMerge ? "Merge Sort" : "Insertion Sort")
