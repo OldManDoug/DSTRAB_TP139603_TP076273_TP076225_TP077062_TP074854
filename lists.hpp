@@ -497,7 +497,7 @@ public:
         }
     }
 
-    // LoadFromFile - read a CSV file (header optional); returns false if it cannot be opened
+    // LoadFromFile 
     bool loadFromFile(const string& filename) {   // O(n)
         clear();
         ifstream file(filename.c_str());
@@ -540,7 +540,7 @@ public:
         return true;
     }
 
-    // Display - same table as the array version; limit < 0 means print all
+    // Display same table as the array version
     void display(int limit = -1) const {
         if (count == 0) {
             cout << "(no records)" << endl;
@@ -567,7 +567,7 @@ public:
         cout << "Showing " << shown << " of " << count << " records" << endl;
     }
 
-    // DisplayWithTotalCost - every record plus the total medical cost
+    // DisplayWithTotalCost
     void displayWithTotalCost() const {   // O(n)
         const int ruleWidth = 101;
         cout << left
@@ -600,10 +600,7 @@ public:
         return "Total Cost";
     }
 
-    // InsertionSort - build a new sorted chain by taking nodes one at a time from the old chain
-    // and re-linking each into the right place; stable. O(n^2) average/worst case.
-    // Best case O(n) is when the input is in the OPPOSITE order (each node goes to the front after 1 comparison),
-    // because the search for the insert position starts from the head (a singly list cannot walk backwards).
+    // InsertionSort
     ListSortStats insertionSort(int field, bool ascending) {
         ListSortStats stats;
         PatientNode* sorted = nullptr;
@@ -638,8 +635,7 @@ public:
         return stats;
     }
 
-    // MergeSort - split / sort halves / merge by re-linking nodes; stable.
-    // O(n log n) time, O(log n) extra space (recursion only - no temporary buffer like the array needs)
+    // MergeSort - merge by re-linking nodes
     ListSortStats mergeSort(int field, bool ascending) {
         ListSortStats stats;
         head = mergeSortNodes(head, field, ascending, stats, 1);
@@ -657,7 +653,7 @@ public:
         return true;
     }
 
-    // NodeBytes - memory of the whole list (sizeof(PatientNode) x n; includes the next pointer of every node)
+    // NodeBytes - memory of the whole list 
     size_t nodeBytes() const {
         return sizeof(PatientNode) * count;
     }
@@ -819,7 +815,7 @@ inline void displayListDatasetComparison(const PatientList& a, const PatientList
             string range = PatientList::ageGroupRange(g);
             cout << "| " << setw(10) << range;
             for (int d = 0; d < 3; d++) {
-                string cell = "-";   // "-" means the dataset has no patients in this age group
+                string cell = "-";   
                 if (stats[d][g].patientCount > 0) {
                     if (pass == 0) {
                         cell = listNumberText(stats[d][g].totalCost, 2);
@@ -837,7 +833,8 @@ inline void displayListDatasetComparison(const PatientList& a, const PatientList
     }
 }
 
-// HighestBillingGroups - the age group(s) with the highest total cost; groups without patients are ignored
+// HighestBillingGroups - the age group with the highest total cost 
+// groups without patients are ignored
 inline string highestListBillingGroups(const ListGroupStats groups[], double& highestCost) {
     int order[5] = {0, 1, 2, 3, 4};
     // Insertion sort of group totals descending; empty groups rank last.
@@ -868,7 +865,7 @@ inline string highestListBillingGroups(const ListGroupStats groups[], double& hi
     return result;
 }
 
-// DisplayClinicalInsights - compare treatment costs and service preferences across datasets and age groups,
+// DisplayClinicalInsights - compare treatment costs and service preferences across datasets and age groups
 // then identify the highest-billing age group and the highest-traffic care type
 inline void displayListClinicalInsights(const PatientList& a, const PatientList& b, const PatientList& c) {
     const PatientList* sets[3] = { &a, &b, &c };
@@ -936,7 +933,7 @@ inline void displayListClinicalInsights(const PatientList& a, const PatientList&
     cout << string(preferenceWidth, '-') << "\n";
 
     // Table 3 - findings: highest-billing age group and highest-traffic care type
-    ListGroupStats allGroups[5];    // age groups of all three datasets together
+    ListGroupStats allGroups[5];    
     for (int g = 0; g < 5; g++) {
         for (int d = 0; d < 3; d++) {
             allGroups[g].patientCount += stats[d][g].patientCount;
@@ -966,7 +963,7 @@ inline void displayListClinicalInsights(const PatientList& a, const PatientList&
     cout << string(findingWidth, '-') << "\n";
 }
 
-// AverageListSortNanoseconds - run one sort many times, each on a fresh copy, return the mean time
+// AverageListSortNanoseconds - run one sort many times, each on a fresh copy
 inline double averageListSortNanoseconds(const PatientList& original, bool useMerge, int field, bool ascending,
                                          int repeats, ListSortStats& statsOut) {
     long long totalNs = 0;
@@ -987,7 +984,7 @@ inline double averageListSortNanoseconds(const PatientList& original, bool useMe
     return (double)totalNs / runs;
 }
 
-// DisplayListSortExperiment - time both sorts for fields firstField..lastField, then print the sorted list
+// DisplayListSortExperiment 
 inline void displayListSortExperiment(const PatientList& original, const string& datasetName,
                                       int firstField, int lastField, bool ascending) {
     const int repeats = 200;
@@ -1009,7 +1006,7 @@ inline void displayListSortExperiment(const PatientList& original, const string&
             double nanoseconds = averageListSortNanoseconds(original, useMerge, field, ascending, repeats, stats);
 
             // Extra memory beyond the list itself: insertion = a few pointers;
-            // merge = about 6 pointer-sized values per recursion level (estimate)
+            // merge = about 6 pointer-sized values per recursion level (eta)
             size_t extraBytes = useMerge ? (size_t)stats.maxDepth * 6 * sizeof(void*) : 3 * sizeof(void*);
             cout << "| " << setw(14) << PatientList::sortFieldName(field)
                  << " | " << setw(14) << (useMerge ? "Merge Sort" : "Insertion Sort")
