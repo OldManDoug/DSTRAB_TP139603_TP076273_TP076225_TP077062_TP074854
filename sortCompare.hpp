@@ -1,8 +1,8 @@
 #ifndef SORT_COMPARE_HPP
 #define SORT_COMPARE_HPP
 
-// run insertion sort and merge sort on the array and on the singly linked list
-// for one dataset, and print them side by side (time complexity, time, comparisons and memory)
+// use insertion and merge sort
+// print time complexity, time, comparisons and memory
 inline void displaySortComparison(const ArraySort& arrayData, const PatientList& listData,                                   const string& datasetName, int field, bool ascending) {
     const int repeats = 200;
     const int ruleWidth = 102;
