@@ -1,5 +1,6 @@
 #ifndef ARRAY_SEARCH_HPP
 #define ARRAY_SEARCH_HPP
+
 #include <iostream>
 #include <iomanip>
 #include <string>
@@ -8,12 +9,10 @@
 
 using namespace std;
 
-// Search options (Array)
 const int ARRAY_SEARCH_AGE_GROUP = 1;
 const int ARRAY_SEARCH_CARE_TYPE = 2;
 const int ARRAY_SEARCH_LOS = 3;
 
-// Age groups (Array)
 const int ARRAY_AGE_GROUP_COUNT = 5;
 const int ARRAY_AGE_GROUP_MIN[ARRAY_AGE_GROUP_COUNT] = { 0, 18, 26, 46, 61 };
 const int ARRAY_AGE_GROUP_MAX[ARRAY_AGE_GROUP_COUNT] = { 17, 25, 45, 60, 100 };
@@ -22,33 +21,24 @@ const string ARRAY_AGE_GROUP_NAME[ARRAY_AGE_GROUP_COUNT] = {
     "Working Adults (Late Career)", "Senior Citizens / Geriatric Care"
 };
 
-// Care types (Array)
 const int ARRAY_CARE_TYPE_COUNT = 6;
 const string ARRAY_CARE_TYPES[ARRAY_CARE_TYPE_COUNT] = {
     "Emergency", "Outpatient", "Inpatient", "Vaccination", "Rehabilitation", "Routine Checkup"
 };
 
-// Struct for array search
 struct ArraySearchQuery {
     int type;
     int minAge;
     int maxAge;
     string careType;
     int hours;
-    ArraySearchQuery() {
-        type = ARRAY_SEARCH_AGE_GROUP;
-        minAge = 0;
-        maxAge = 0;
-        hours = 0;
-    }
+    ArraySearchQuery() : type(ARRAY_SEARCH_AGE_GROUP), minAge(0), maxAge(0), hours(0) {}
 };
 
-// Benchmark experiment settings
 const int ARRAY_SEARCH_RULE = 101;
 const int ARRAY_SEARCH_REPEATS = 200;
 const int ARRAY_SEARCH_ROUNDS = 5;
 
-// Criteria text generator
 inline string arraySearchCriteriaText(const ArraySearchQuery& q) {
     if (q.type == ARRAY_SEARCH_AGE_GROUP) {
         return "Age " + to_string(q.minAge) + "-" + to_string(q.maxAge);
@@ -59,7 +49,6 @@ inline string arraySearchCriteriaText(const ArraySearchQuery& q) {
     return "LOS > " + to_string(q.hours) + " hours";
 }
 
-// Record table header
 inline void printArraySearchHeader(const string& title) {
     cout << "\n" << title << "\n";
     cout << string(ARRAY_SEARCH_RULE, '-') << "\n";
@@ -72,7 +61,6 @@ inline void printArraySearchHeader(const string& title) {
     cout << string(ARRAY_SEARCH_RULE, '-') << "\n";
 }
 
-// Record table row
 inline void printArraySearchRow(const Patient& p) {
     cout << left << "| " << setw(5) << p.age
          << " | " << setw(15) << p.careType
@@ -82,7 +70,8 @@ inline void printArraySearchRow(const Patient& p) {
          << " | " << setw(23) << numberText(p.totalCost, 2) << " |\n";
 }
 
-// Search by age group (Linear Search for Unsorted, Binary Range Search for Sorted)
+// Binary search range logic adapted from GeeksforGeeks (2023)
+// GeeksforGeeks. (2023, November 10). Binary Search. https://www.geeksforgeeks.org/binary-search/
 inline int arraySearchAgeGroup(const ArrayData& dataset, int minAge, int maxAge, bool isSorted, bool ascending, int& comparisons, bool show) {
     int found = 0;
     comparisons = 0;
@@ -90,7 +79,7 @@ inline int arraySearchAgeGroup(const ArrayData& dataset, int minAge, int maxAge,
 
     if (isSorted && count > 0) {
         if (ascending) {
-            // Binary search to find first match index where age >= minAge
+            // Find lower bound
             int low = 0, high = count - 1;
             int startIndex = count;
             while (low <= high) {
@@ -103,18 +92,15 @@ inline int arraySearchAgeGroup(const ArrayData& dataset, int minAge, int maxAge,
                     low = mid + 1;
                 }
             }
-            // Scan sequentially while age <= maxAge
+            // Scan through valid range
             for (int i = startIndex; i < count; i++) {
                 comparisons++;
-                if (dataset.getAt(i).age > maxAge) {
-                    break; // Early termination bound
-                }
+                if (dataset.getAt(i).age > maxAge) break;
+                
                 found++;
-                if (show) {
-                    printArraySearchRow(dataset.getAt(i));
-                }
+                if (show) printArraySearchRow(dataset.getAt(i));
             }
-        } else { // Descending sorted array
+        } else {
             int low = 0, high = count - 1;
             int startIndex = count;
             while (low <= high) {
@@ -129,48 +115,40 @@ inline int arraySearchAgeGroup(const ArrayData& dataset, int minAge, int maxAge,
             }
             for (int i = startIndex; i < count; i++) {
                 comparisons++;
-                if (dataset.getAt(i).age < minAge) {
-                    break;
-                }
+                if (dataset.getAt(i).age < minAge) break;
+                
                 found++;
-                if (show) {
-                    printArraySearchRow(dataset.getAt(i));
-                }
+                if (show) printArraySearchRow(dataset.getAt(i));
             }
         }
     } else {
-        // Unsorted array linear search
+        // Unsorted linear scan
         for (int i = 0; i < count; i++) {
             comparisons++;
             if (dataset.getAt(i).age >= minAge && dataset.getAt(i).age <= maxAge) {
                 found++;
-                if (show) {
-                    printArraySearchRow(dataset.getAt(i));
-                }
+                if (show) printArraySearchRow(dataset.getAt(i));
             }
         }
     }
     return found;
 }
 
-// Search by care type (Linear search)
 inline int arraySearchCareType(const ArrayData& dataset, const string& careType, int& comparisons, bool show) {
     int found = 0;
     comparisons = 0;
     int count = dataset.getCount();
+    
     for (int i = 0; i < count; i++) {
         comparisons++;
         if (dataset.getAt(i).careType == careType) {
             found++;
-            if (show) {
-                printArraySearchRow(dataset.getAt(i));
-            }
+            if (show) printArraySearchRow(dataset.getAt(i));
         }
     }
     return found;
 }
 
-// Search by visit duration (lengthOfStay > hours)
 inline int arraySearchLOS(const ArrayData& dataset, int hours, bool isSorted, bool ascending, int& comparisons, bool show) {
     int found = 0;
     comparisons = 0;
@@ -178,7 +156,6 @@ inline int arraySearchLOS(const ArrayData& dataset, int hours, bool isSorted, bo
 
     if (isSorted && count > 0) {
         if (ascending) {
-            // Binary search to find first element with lengthOfStay > hours
             int low = 0, high = count - 1;
             int startIndex = count;
             while (low <= high) {
@@ -193,39 +170,31 @@ inline int arraySearchLOS(const ArrayData& dataset, int hours, bool isSorted, bo
             }
             for (int i = startIndex; i < count; i++) {
                 found++;
-                if (show) {
-                    printArraySearchRow(dataset.getAt(i));
-                }
+                if (show) printArraySearchRow(dataset.getAt(i));
             }
-        } else { // Descending array
+        } else {
             for (int i = 0; i < count; i++) {
                 comparisons++;
                 if (dataset.getAt(i).lengthOfStay > hours) {
                     found++;
-                    if (show) {
-                        printArraySearchRow(dataset.getAt(i));
-                    }
+                    if (show) printArraySearchRow(dataset.getAt(i));
                 } else {
-                    break; // Early exit as remaining elements are <= hours
+                    break;
                 }
             }
         }
     } else {
-        // Unsorted linear search
         for (int i = 0; i < count; i++) {
             comparisons++;
             if (dataset.getAt(i).lengthOfStay > hours) {
                 found++;
-                if (show) {
-                    printArraySearchRow(dataset.getAt(i));
-                }
+                if (show) printArraySearchRow(dataset.getAt(i));
             }
         }
     }
     return found;
 }
 
-// Dispatcher for search queries
 inline int runArraySearch(const ArrayData& dataset, const ArraySearchQuery& q, bool isSorted, bool ascending, int& comparisons, bool show) {
     if (q.type == ARRAY_SEARCH_AGE_GROUP) {
         return arraySearchAgeGroup(dataset, q.minAge, q.maxAge, isSorted, ascending, comparisons, show);
@@ -236,13 +205,15 @@ inline int runArraySearch(const ArrayData& dataset, const ArraySearchQuery& q, b
     return arraySearchLOS(dataset, q.hours, isSorted, ascending, comparisons, show);
 }
 
-// Average search benchmark execution timing (Nanoseconds)
+// Execution timing using std::chrono adapted from Cplusplus.com
+// Cplusplus.com. (2021). std::chrono::steady_clock. https://cplusplus.com/reference/chrono/steady_clock/
 inline double averageArraySearchNanoseconds(const ArrayData& dataset, const ArraySearchQuery& q, bool isSorted, bool ascending, int repeats, int& found, int& comparisons) {
     found = runArraySearch(dataset, q, isSorted, ascending, comparisons, false);
     volatile int sink = 0;
     int ignored = 0;
     double best = -1;
     int runs = repeats;
+    
     for (int round = 0; round < ARRAY_SEARCH_ROUNDS; round++) {
         double elapsed = 0;
         for (;;) {
@@ -252,7 +223,7 @@ inline double averageArraySearchNanoseconds(const ArrayData& dataset, const Arra
             }
             chrono::steady_clock::time_point stop = chrono::steady_clock::now();
             elapsed = (double)chrono::duration_cast<chrono::nanoseconds>(stop - start).count();
-            // A round must last at least 20 ms, otherwise a coarse clock reads 0: repeat more and measure again
+            
             if (elapsed >= 20000000.0 || runs >= 100000000) {
                 break;
             }
@@ -267,20 +238,18 @@ inline double averageArraySearchNanoseconds(const ArrayData& dataset, const Arra
     return best;
 }
 
-// Run search experiment benchmark and print performance comparison table
 inline void displayArraySearchExperiment(const ArraySort& original, const string& datasetName, const ArraySearchQuery& q) {
     const int ruleWidth = 79;
     string criteria = arraySearchCriteriaText(q);
 
-    // Create sorted copies for evaluation
     int sortField = (q.type == ARRAY_SEARCH_LOS) ? SORT_BY_DURATION : SORT_BY_AGE;
     string fieldLabel = (q.type == ARRAY_SEARCH_LOS) ? "LOS" : "Age";
+    
     ArraySort sortedAsc(original);
     sortedAsc.mergeSort(sortField, true);
     ArraySort sortedDesc(original);
     sortedDesc.mergeSort(sortField, false);
 
-    // Print header and results table
     int comparisons = 0;
     printArraySearchHeader("=== " + datasetName + " - Search: " + criteria + " ===");
     int shown = runArraySearch(sortedAsc, q, true, true, comparisons, true);
@@ -290,7 +259,6 @@ inline void displayArraySearchExperiment(const ArraySort& original, const string
     cout << string(ARRAY_SEARCH_RULE, '-') << "\n";
     cout << "Showing " << shown << " matching records (ordered by " << ArraySort::sortFieldName(sortField) << ")" << endl;
 
-    // Output performance benchmark table
     const ArraySort* datasets[3] = { &original, &sortedAsc, &sortedDesc };
     const string labels[3] = { "Unsorted", "Sorted (" + fieldLabel + " asc)", "Sorted (" + fieldLabel + " desc)" };
     int rowCount = (q.type == ARRAY_SEARCH_CARE_TYPE) ? 2 : 3;
@@ -318,7 +286,7 @@ inline void displayArraySearchExperiment(const ArraySort& original, const string
              << " | " << setw(6) << found
              << " | " << setw(11) << comparisons
              << " | " << setw(13) << numberText(nanoseconds, 0)
-             << " | " << setw(16) << (original.dataBytes() + searchBytes) << " |\n";   // records + working memory
+             << " | " << setw(16) << (original.dataBytes() + searchBytes) << " |\n";
     }
     cout << string(ruleWidth, '-') << "\n";
     if (!sameResult) {
@@ -333,7 +301,6 @@ inline void displayArraySearchExperiment(const ArraySort& original, const string
     }
 }
 
-// Menu choice helper
 inline int readArraySearchChoice() {
     int choice;
     if (!(cin >> choice)) {
@@ -345,7 +312,6 @@ inline int readArraySearchChoice() {
     return choice;
 }
 
-// Interactive search criteria selection menu
 inline int chooseArraySearchQuery(ArraySearchQuery& query, const string& title) {
     cout << "\n===== " << title << " =====" << endl;
     cout << "1. Age group" << endl;
@@ -355,9 +321,8 @@ inline int chooseArraySearchQuery(ArraySearchQuery& query, const string& title) 
     cout << "Criterion: ";
     int criterion = readArraySearchChoice();
 
-    if (criterion == 0) {
-        return 0;
-    }
+    if (criterion == 0) return 0;
+
     query.type = criterion;
     if (criterion == ARRAY_SEARCH_AGE_GROUP) {
         cout << "\n===== AGE GROUP =====" << endl;
@@ -400,16 +365,14 @@ inline int chooseArraySearchQuery(ArraySearchQuery& query, const string& title) 
     return 1;
 }
 
-// Array search experiment menu trigger
 inline void runArraySearchMenu(ArraySort& datasetA, ArraySort& datasetB, ArraySort& datasetC) {
     int status;
     do {
         ArraySearchQuery query;
         status = chooseArraySearchQuery(query, "SEARCH BY");
         if (status == 1) {
-            if (!ensureAllLoaded(datasetA, datasetB, datasetC)) {
-                return;
-            }
+            if (!ensureAllLoaded(datasetA, datasetB, datasetC)) return;
+
             displayArraySearchExperiment(datasetA, "Dataset A", query);
             displayArraySearchExperiment(datasetB, "Dataset B", query);
             displayArraySearchExperiment(datasetC, "Dataset C", query);
