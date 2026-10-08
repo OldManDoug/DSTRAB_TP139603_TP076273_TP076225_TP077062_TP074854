@@ -1,6 +1,7 @@
 #ifndef SEARCH_COMPARE_HPP
 #define SEARCH_COMPARE_HPP
 
+// Converts list search query to matchi array search query struct
 inline ArraySearchQuery toArrayQuery(const ListSearchQuery& q) {
     ArraySearchQuery arrayQuery;
     arrayQuery.type = q.type;
@@ -11,19 +12,21 @@ inline ArraySearchQuery toArrayQuery(const ListSearchQuery& q) {
     return arrayQuery;
 }
 
+// Side by side performance table for Array and Singly Linked List comparison
 inline void displaySearchComparison(const ArraySort& arrayData, const PatientList& listData,
                                     const string& datasetName, const ListSearchQuery& q) {
     const int ruleWidth = 109;
     bool byLOS = (q.type == LIST_SEARCH_LOS);
     ArraySearchQuery arrayQuery = toArrayQuery(q);
 
-    // Prepare sorted copies for comparison
+    // Sorted copies for comparison
     ArraySort sortedArray(arrayData);
     sortedArray.mergeSort(byLOS ? SORT_BY_DURATION : SORT_BY_AGE, true);
 
     PatientList sortedList(listData);
     sortedList.mergeSort(byLOS ? LIST_SORT_BY_DURATION : LIST_SORT_BY_AGE, true);
 
+    // Local stack memory footprint per search
     size_t arrayWorking = sizeof(const Patient*) + 2 * sizeof(int);
     size_t listWorking = sizeof(const PatientNode*) + 2 * sizeof(int);
 
@@ -39,6 +42,7 @@ inline void displaySearchComparison(const ArraySort& arrayData, const PatientLis
 
     for (int pass = 0; pass < 2; pass++) {
         bool sorted = (pass == 1);
+        // Binary search only used on sorted arrays for numeric fields (Age / LOS)
         bool binary = sorted && q.type != LIST_SEARCH_CARE_TYPE;
         
         string arrayName = binary ? "Binary (sorted)" : (sorted ? "Linear (sorted)" : "Linear (unsorted)");
@@ -46,7 +50,7 @@ inline void displaySearchComparison(const ArraySort& arrayData, const PatientLis
 
         int found = 0, comparisons = 0;
 
-        // Array run
+        // ArraySearch execution
         const ArraySort& arraySource = sorted ? sortedArray : arrayData;
         double arrayNs = averageArraySearchNanoseconds(arraySource, arrayQuery, sorted, true, ARRAY_SEARCH_REPEATS,
                                                        found, comparisons);
@@ -57,7 +61,7 @@ inline void displaySearchComparison(const ArraySort& arrayData, const PatientLis
              << " | " << setw(11) << comparisons
              << " | " << setw(16) << (arrayData.dataBytes() + arrayWorking) << " |\n";
 
-        // Linked list run
+        // Singly linked list search execution
         const PatientList& listSource = sorted ? sortedList : listData;
         double listNs = averageListSearchNanoseconds(listSource.getHead(), q, sorted, true, LIST_SEARCH_REPEATS,
                                                      found, comparisons);
