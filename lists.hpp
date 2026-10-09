@@ -490,6 +490,7 @@ public:
     }
 
     // Load patient records from a CSV file.
+// https://www.scribd.com/document/465084035/file-handling-with-linked-list-in-c
     bool loadFromFile(const string& filename) {   // O(n)
         clear();
         ifstream file(filename.c_str());
