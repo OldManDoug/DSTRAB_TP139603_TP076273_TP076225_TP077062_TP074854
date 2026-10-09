@@ -358,7 +358,7 @@ public:
         return "Total Cost";
     }
 
-    // Insertion Sort 
+    // Insertion Sort  https://www.programiz.com/dsa/insertion-sort
     SortStats insertionSort(int field, bool ascending) {  
         SortStats stats;
         for (int i = 1; i < count; i++) {
@@ -378,7 +378,7 @@ public:
         }
         return stats;
     }
-
+//https://www.programiz.com/dsa/merge-sort
     // Merge Sort
     SortStats mergeSort(int field, bool ascending) {
         SortStats stats;
