@@ -30,7 +30,7 @@ struct ListPatient {
     int daysVisitsPerYear;
     double totalCost;      // lengthOfStay * baseCostPerHour * daysVisitsPerYear
 };
-
+//Data structures - C++ Tutorials. (n.d.). Cplusplus.Com. Retrieved October 8, 2026, from https://cplusplus.com/doc/tutorial/structures/
 // One node: the record + pointer to the next node.
 struct PatientNode {
     ListPatient data;
@@ -176,7 +176,7 @@ private:
         size_t last = text.find_last_not_of(whitespace);
         return text.substr(first, last - first + 1);
     }
-
+// Parsing will ensure string from file become the necessary datatype for operations
     static bool parseInt(const string& text, int& value) {
         istringstream ss(text);
         char extra;
@@ -362,7 +362,7 @@ public:
             delete cur;
             cur = nextNode;
         }
-        head = nullptr;
+        head = nullptr; // set to null for next operation
         tail = nullptr;
         count = 0;
     }
@@ -494,13 +494,13 @@ public:
         clear();
         ifstream file(filename.c_str());
         if (!file.is_open()) {
-            cerr << "Error: Cannot open file " << filename << endl;
+            cerr << "Error: Cannot open file " << filename << endl; // ERROR message in case of file issues
             return false;
         }
         string line;
         int lineNumber = 0;
         bool firstRecordLine = true;
-        while (getline(file, line)) {
+        while (getline(file, line)) { //read and pass line by line from file
             lineNumber++;
             if (lineNumber == 1 && line.size() >= 3 &&
                 (unsigned char)line[0] == 0xEF && (unsigned char)line[1] == 0xBB && (unsigned char)line[2] == 0xBF) {
@@ -554,7 +554,7 @@ public:
                  << " | " << setw(11) << cur->data.baseCostPerHour
                  << " | " << setw(12) << cur->data.daysVisitsPerYear << " |\n";
             cur = cur->next;
-        }
+        } 
         cout << string(75, '-') << "\n";
         cout << "Showing " << shown << " of " << count << " records" << endl;
     }
